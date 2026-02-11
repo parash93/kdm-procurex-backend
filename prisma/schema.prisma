@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum Role {
+  ADMIN
+  PURCHASE_MANAGER
+  OPERATIONS
+  FINANCE
+}
+
+enum EntityStatus {
+  ACTIVE
+  SUSPENDED
+  BLACKLISTED
+}
+
+enum SupplierStatus {
+  ACTIVE
+  SUSPENDED
+  BLACKLISTED
+}
+
+enum POStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  SENT_TO_SUPPLIER
+  IN_PRODUCTION
+  READY
+  SHIPPED
+  IN_TRANSIT
+  DELIVERED
+  CLOSED
+  CANCELLED
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  role          Role     @default(OPERATIONS)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  approvals     Approval[]
+}
+
+model Division {
+  id            String       @id @default(uuid())
+  name          String
+  contactPerson String?
+  status        EntityStatus @default(ACTIVE)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  purchaseOrders PurchaseOrder[]
+}
+
+model ProductCategory {
+  id        String       @id @default(uuid())
+  name      String
+  status    EntityStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id          String          @id @default(uuid())
+  name        String
+  categoryId  String
+  category    ProductCategory @relation(fields: [categoryId], references: [id])
+  description String?
+  status      EntityStatus    @default(ACTIVE)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  purchaseOrderItems PurchaseOrderItem[]
+
+  @@index([categoryId])
+}
+
+model Supplier {
+  id                  String         @id @default(uuid())
+  companyName         String
+  contactPerson       String?
+  phone               String?
+  email               String?
+  address             String?
+  status              SupplierStatus @default(ACTIVE)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  purchaseOrders      PurchaseOrder[]
+}
+
+model PurchaseOrder {
+  id                   String          @id @default(uuid())
+  poNumber             String          @unique
+  supplierId           String
+  supplier             Supplier        @relation(fields: [supplierId], references: [id])
+  divisionId           String?
+  division             Division?       @relation(fields: [divisionId], references: [id])
+  poDate               DateTime        @default(now())
+  expectedDeliveryDate DateTime?
+  status               POStatus        @default(DRAFT)
+  currency             String          @default("USD")
+  paymentTerms         String?
+  remarks              String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  items                PurchaseOrderItem[]
+  stageUpdates         StageUpdate[]
+  approvals            Approval[]
+
+  @@index([supplierId])
+  @@index([divisionId])
+}
+
+model PurchaseOrderItem {
+  id            String        @id @default(uuid())
+  poId          String
+  purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id])
+  productId     String?
+  product       Product?      @relation(fields: [productId], references: [id]) // Optional link to product catalog
+  productName   String        // Keep this for ad-hoc items or snapshot name
+  sku           String?
+  quantity      Int
+  unitPrice     Decimal
+  totalPrice    Decimal
+  remarks       String?
+
+  @@index([poId])
+  @@index([productId])
+}
+
+model StageUpdate {
+  id            String        @id @default(uuid())
+  poId          String
+  purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id])
+  stage         String
+  notes         String?
+  attachmentUrl String?
+  photoUrl      String?
+  updatedBy     String?       // Could link to User if strictly tracked
+  timestamp     DateTime      @default(now())
+
+  @@index([poId])
+}
+
+model Approval {
+  id            String        @id @default(uuid())
+  poId          String
+  purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id])
+  approverId    String
+  approver      User          @relation(fields: [approverId], references: [id])
+  level         Int           // 1, 2, 3
+  decision      String        // APPROVED, REJECTED
+  remarks       String?
+  timestamp     DateTime      @default(now())
+
+  @@index([poId])
+  @@index([approverId])
+}

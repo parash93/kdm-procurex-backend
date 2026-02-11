@@ -1,0 +1,566 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"_36_Enums.SupplierStatus": {
+				"type": "string",
+				"enum": [
+					"ACTIVE",
+					"SUSPENDED",
+					"BLACKLISTED"
+				]
+			},
+			"DefaultSelection_Prisma._36_SupplierPayload_": {
+				"properties": {
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.SupplierStatus"
+					},
+					"address": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"contactPerson": {
+						"type": "string"
+					},
+					"companyName": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"updatedAt",
+					"createdAt",
+					"status",
+					"address",
+					"email",
+					"phone",
+					"contactPerson",
+					"companyName",
+					"id"
+				],
+				"type": "object"
+			},
+			"Supplier": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_SupplierPayload_",
+				"description": "Model Supplier"
+			},
+			"SupplierStatus": {
+				"$ref": "#/components/schemas/_36_Enums.SupplierStatus"
+			},
+			"SupplierCreationParams": {
+				"properties": {
+					"companyName": {
+						"type": "string"
+					},
+					"contactPerson": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"taxId": {
+						"type": "string"
+					},
+					"paymentTerms": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/SupplierStatus"
+					}
+				},
+				"required": [
+					"companyName"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_SupplierCreationParams_": {
+				"properties": {
+					"companyName": {
+						"type": "string"
+					},
+					"contactPerson": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"taxId": {
+						"type": "string"
+					},
+					"paymentTerms": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.SupplierStatus"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"_36_Enums.POStatus": {
+				"type": "string",
+				"enum": [
+					"DRAFT",
+					"PENDING_APPROVAL",
+					"APPROVED",
+					"REJECTED",
+					"SENT_TO_SUPPLIER",
+					"IN_PRODUCTION",
+					"READY",
+					"SHIPPED",
+					"IN_TRANSIT",
+					"DELIVERED",
+					"CLOSED",
+					"CANCELLED"
+				]
+			},
+			"DefaultSelection_Prisma._36_PurchaseOrderPayload_": {
+				"properties": {
+					"remarks": {
+						"type": "string"
+					},
+					"currency": {
+						"type": "string"
+					},
+					"expectedDeliveryDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"poDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"divisionId": {
+						"type": "string"
+					},
+					"supplierId": {
+						"type": "string"
+					},
+					"poNumber": {
+						"type": "string"
+					},
+					"paymentTerms": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.POStatus"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"remarks",
+					"currency",
+					"expectedDeliveryDate",
+					"poDate",
+					"divisionId",
+					"supplierId",
+					"poNumber",
+					"paymentTerms",
+					"updatedAt",
+					"createdAt",
+					"status",
+					"id"
+				],
+				"type": "object"
+			},
+			"PurchaseOrder": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_PurchaseOrderPayload_",
+				"description": "Model PurchaseOrder"
+			},
+			"CreatePOParams": {
+				"properties": {
+					"supplierId": {
+						"type": "string"
+					},
+					"expectedDeliveryDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"currency": {
+						"type": "string"
+					},
+					"paymentTerms": {
+						"type": "string"
+					},
+					"remarks": {
+						"type": "string"
+					},
+					"items": {
+						"items": {
+							"properties": {
+								"remarks": {
+									"type": "string"
+								},
+								"totalPrice": {
+									"type": "number",
+									"format": "double"
+								},
+								"unitPrice": {
+									"type": "number",
+									"format": "double"
+								},
+								"quantity": {
+									"type": "number",
+									"format": "double"
+								},
+								"sku": {
+									"type": "string"
+								},
+								"productName": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"totalPrice",
+								"unitPrice",
+								"quantity",
+								"productName"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"supplierId",
+					"items"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "kdm-procurex-backend",
+		"version": "1.0.0",
+		"description": "KDM ProcureX Backend",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
+	},
+	"paths": {
+		"/suppliers/{id}": {
+			"get": {
+				"operationId": "GetSupplier",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Supplier"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Suppliers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateSupplier",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Supplier"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Suppliers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_SupplierCreationParams_"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteSupplier",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"tags": [
+					"Suppliers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/suppliers": {
+			"get": {
+				"operationId": "GetAllSuppliers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Supplier"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Suppliers"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateSupplier",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Supplier"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Suppliers"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SupplierCreationParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/orders": {
+			"get": {
+				"operationId": "GetAllOrders",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/PurchaseOrder"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Purchase Orders"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateOrder",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PurchaseOrder"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Purchase Orders"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePOParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/orders/{id}": {
+			"get": {
+				"operationId": "GetOrder",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/PurchaseOrder"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Purchase Orders"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/health": {
+			"get": {
+				"operationId": "GetHealth",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"status": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"status"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Health"
+				],
+				"security": [],
+				"parameters": []
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}
