@@ -7,6 +7,143 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"_36_Enums.Role": {
+				"type": "string",
+				"enum": [
+					"ADMIN",
+					"PURCHASE_MANAGER",
+					"OPERATIONS",
+					"FINANCE"
+				]
+			},
+			"DefaultSelection_Prisma._36_UserPayload_": {
+				"properties": {
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"role": {
+						"$ref": "#/components/schemas/_36_Enums.Role"
+					},
+					"passwordHash": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"updatedAt",
+					"createdAt",
+					"role",
+					"passwordHash",
+					"email",
+					"id"
+				],
+				"type": "object"
+			},
+			"User": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_UserPayload_",
+				"description": "Model User"
+			},
+			"Role": {
+				"$ref": "#/components/schemas/_36_Enums.Role"
+			},
+			"UserCreationParams": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"role"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DefaultSelection_Prisma._36_StageUpdatePayload_": {
+				"properties": {
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedBy": {
+						"type": "string"
+					},
+					"photoUrl": {
+						"type": "string"
+					},
+					"attachmentUrl": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"stage": {
+						"type": "string"
+					},
+					"poId": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"timestamp",
+					"updatedBy",
+					"photoUrl",
+					"attachmentUrl",
+					"notes",
+					"stage",
+					"poId",
+					"id"
+				],
+				"type": "object"
+			},
+			"StageUpdate": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_StageUpdatePayload_",
+				"description": "Model StageUpdate"
+			},
+			"StageUpdateParams": {
+				"properties": {
+					"poId": {
+						"type": "string"
+					},
+					"stage": {
+						"type": "string"
+					},
+					"notes": {
+						"type": "string"
+					},
+					"photoUrl": {
+						"type": "string"
+					},
+					"updatePOStatus": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"poId",
+					"stage"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"_36_Enums.SupplierStatus": {
 				"type": "string",
 				"enum": [
@@ -17,21 +154,10 @@
 			},
 			"DefaultSelection_Prisma._36_SupplierPayload_": {
 				"properties": {
-					"updatedAt": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"createdAt": {
-						"type": "string",
-						"format": "date-time"
-					},
 					"status": {
 						"$ref": "#/components/schemas/_36_Enums.SupplierStatus"
 					},
 					"address": {
-						"type": "string"
-					},
-					"email": {
 						"type": "string"
 					},
 					"phone": {
@@ -43,19 +169,30 @@
 					"companyName": {
 						"type": "string"
 					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"email": {
+						"type": "string"
+					},
 					"id": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"updatedAt",
-					"createdAt",
 					"status",
 					"address",
-					"email",
 					"phone",
 					"contactPerson",
 					"companyName",
+					"updatedAt",
+					"createdAt",
+					"email",
 					"id"
 				],
 				"type": "object"
@@ -130,6 +267,158 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
+			"_36_Enums.EntityStatus": {
+				"type": "string",
+				"enum": [
+					"ACTIVE",
+					"SUSPENDED",
+					"BLACKLISTED"
+				]
+			},
+			"DefaultSelection_Prisma._36_ProductPayload_": {
+				"properties": {
+					"description": {
+						"type": "string"
+					},
+					"categoryId": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"description",
+					"categoryId",
+					"status",
+					"updatedAt",
+					"createdAt",
+					"id",
+					"name"
+				],
+				"type": "object"
+			},
+			"Product": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_ProductPayload_",
+				"description": "Model Product"
+			},
+			"EntityStatus": {
+				"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+			},
+			"ProductCreationParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"categoryId": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/EntityStatus"
+					}
+				},
+				"required": [
+					"name",
+					"categoryId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_ProductCreationParams_": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"categoryId": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"DefaultSelection_Prisma._36_ProductCategoryPayload_": {
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"status",
+					"updatedAt",
+					"createdAt",
+					"id",
+					"name"
+				],
+				"type": "object"
+			},
+			"ProductCategory": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_ProductCategoryPayload_",
+				"description": "Model ProductCategory"
+			},
+			"ProductCategoryCreationParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/EntityStatus"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_ProductCategoryCreationParams_": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
 			"_36_Enums.POStatus": {
 				"type": "string",
 				"enum": [
@@ -175,6 +464,9 @@
 					"paymentTerms": {
 						"type": "string"
 					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.POStatus"
+					},
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
@@ -182,9 +474,6 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"status": {
-						"$ref": "#/components/schemas/_36_Enums.POStatus"
 					},
 					"id": {
 						"type": "string"
@@ -199,9 +488,9 @@
 					"supplierId",
 					"poNumber",
 					"paymentTerms",
+					"status",
 					"updatedAt",
 					"createdAt",
-					"status",
 					"id"
 				],
 				"type": "object"
@@ -213,6 +502,9 @@
 			"CreatePOParams": {
 				"properties": {
 					"supplierId": {
+						"type": "string"
+					},
+					"divisionId": {
 						"type": "string"
 					},
 					"expectedDeliveryDate": {
@@ -251,6 +543,9 @@
 								},
 								"productName": {
 									"type": "string"
+								},
+								"productId": {
+									"type": "string"
 								}
 							},
 							"required": [
@@ -270,6 +565,305 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"Partial_CreatePOParams-and-_status-POStatus__": {
+				"properties": {
+					"supplierId": {
+						"type": "string"
+					},
+					"divisionId": {
+						"type": "string"
+					},
+					"expectedDeliveryDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"currency": {
+						"type": "string"
+					},
+					"paymentTerms": {
+						"type": "string"
+					},
+					"remarks": {
+						"type": "string"
+					},
+					"items": {
+						"items": {
+							"properties": {
+								"remarks": {
+									"type": "string"
+								},
+								"totalPrice": {
+									"type": "number",
+									"format": "double"
+								},
+								"unitPrice": {
+									"type": "number",
+									"format": "double"
+								},
+								"quantity": {
+									"type": "number",
+									"format": "double"
+								},
+								"sku": {
+									"type": "string"
+								},
+								"productName": {
+									"type": "string"
+								},
+								"productId": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"totalPrice",
+								"unitPrice",
+								"quantity",
+								"productName"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.POStatus"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"DefaultSelection_Prisma._36_DivisionPayload_": {
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+					},
+					"contactPerson": {
+						"type": "string"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"status",
+					"contactPerson",
+					"updatedAt",
+					"createdAt",
+					"id",
+					"name"
+				],
+				"type": "object"
+			},
+			"Division": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_DivisionPayload_",
+				"description": "Model Division"
+			},
+			"DivisionCreationParams": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"contactPerson": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/EntityStatus"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_DivisionCreationParams_": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"contactPerson": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"DashboardStats": {
+				"properties": {
+					"totalOrders": {
+						"type": "number",
+						"format": "double"
+					},
+					"activeOrders": {
+						"type": "number",
+						"format": "double"
+					},
+					"pendingApprovals": {
+						"type": "number",
+						"format": "double"
+					},
+					"delayedOrders": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalSuppliers": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalDivisions": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalProducts": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalCategories": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"totalOrders",
+					"activeOrders",
+					"pendingApprovals",
+					"delayedOrders",
+					"totalSuppliers",
+					"totalDivisions",
+					"totalProducts",
+					"totalCategories"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"POStatus": {
+				"$ref": "#/components/schemas/_36_Enums.POStatus"
+			},
+			"OrdersByStatus": {
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/POStatus"
+					},
+					"count": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"status",
+					"count"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrdersByDivision": {
+				"properties": {
+					"divisionName": {
+						"type": "string"
+					},
+					"count": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalAmount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"divisionName",
+					"count",
+					"totalAmount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DefaultSelection_Prisma._36_ApprovalPayload_": {
+				"properties": {
+					"decision": {
+						"type": "string"
+					},
+					"level": {
+						"type": "number",
+						"format": "double"
+					},
+					"approverId": {
+						"type": "string"
+					},
+					"remarks": {
+						"type": "string"
+					},
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"poId": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"decision",
+					"level",
+					"approverId",
+					"remarks",
+					"timestamp",
+					"poId",
+					"id"
+				],
+				"type": "object"
+			},
+			"Approval": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_ApprovalPayload_",
+				"description": "Model Approval"
+			},
+			"ApprovalParams": {
+				"properties": {
+					"poId": {
+						"type": "string"
+					},
+					"approverId": {
+						"type": "string"
+					},
+					"level": {
+						"type": "number",
+						"format": "double"
+					},
+					"decision": {
+						"type": "string",
+						"enum": [
+							"APPROVED",
+							"REJECTED"
+						]
+					},
+					"remarks": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"poId",
+					"approverId",
+					"level",
+					"decision"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -284,6 +878,181 @@
 		"contact": {}
 	},
 	"paths": {
+		"/users": {
+			"get": {
+				"operationId": "GetUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/User"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserCreationParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/seed": {
+			"post": {
+				"operationId": "SeedUsers",
+				"responses": {
+					"200": {
+						"description": "Seeded",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/users/{id}": {
+			"delete": {
+				"operationId": "DeleteUser",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/tracking/{poId}": {
+			"get": {
+				"operationId": "GetHistory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/StageUpdate"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Tracking"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "poId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/tracking": {
+			"post": {
+				"operationId": "AddUpdate",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StageUpdate"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Tracking"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/StageUpdateParams"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/suppliers/{id}": {
 			"get": {
 				"operationId": "GetSupplier",
@@ -436,6 +1205,310 @@
 				}
 			}
 		},
+		"/products": {
+			"get": {
+				"operationId": "GetProducts",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Product"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Product"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateProduct",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Product"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Product"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ProductCreationParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/products/{id}": {
+			"get": {
+				"operationId": "GetProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Product"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Product"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Product"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Product"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_ProductCreationParams_"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteProduct",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"tags": [
+					"Product"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/product-categories": {
+			"get": {
+				"operationId": "GetCategories",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProductCategory"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"ProductCategory"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateCategory",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductCategory"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"ProductCategory"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ProductCategoryCreationParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/product-categories/{id}": {
+			"get": {
+				"operationId": "GetCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ProductCategory"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"ProductCategory"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductCategory"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"ProductCategory"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_ProductCategoryCreationParams_"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteCategory",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"tags": [
+					"ProductCategory"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/orders": {
 			"get": {
 				"operationId": "GetAllOrders",
@@ -525,6 +1598,67 @@
 						}
 					}
 				]
+			},
+			"put": {
+				"operationId": "UpdateOrder",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PurchaseOrder"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Purchase Orders"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_CreatePOParams-and-_status-POStatus__"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteOrder",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"tags": [
+					"Purchase Orders"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/health": {
@@ -555,6 +1689,319 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/divisions": {
+			"get": {
+				"operationId": "GetDivisions",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Division"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Division"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateDivision",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Division"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Division"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DivisionCreationParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/divisions/{id}": {
+			"get": {
+				"operationId": "GetDivision",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Division"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Division"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateDivision",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Division"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Division"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_DivisionCreationParams_"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteDivision",
+				"responses": {
+					"204": {
+						"description": "Deleted"
+					}
+				},
+				"tags": [
+					"Division"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/stats": {
+			"get": {
+				"operationId": "GetStats",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DashboardStats"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/dashboard/delayed": {
+			"get": {
+				"operationId": "GetDelayedOrders",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/dashboard/by-status": {
+			"get": {
+				"operationId": "GetOrdersByStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/OrdersByStatus"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/dashboard/by-division": {
+			"get": {
+				"operationId": "GetOrdersByDivision",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/OrdersByDivision"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/approvals/history/{poId}": {
+			"get": {
+				"operationId": "GetHistory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Approval"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Approvals"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "poId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/approvals": {
+			"post": {
+				"operationId": "SubmitApproval",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Approval"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Approvals"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ApprovalParams"
+							}
+						}
+					}
+				}
 			}
 		}
 	},

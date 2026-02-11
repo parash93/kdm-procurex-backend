@@ -1,16 +1,18 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Path,
     Post,
+    Put,
     Route,
     SuccessResponse,
     Tags,
 } from "tsoa";
 import { inject, injectable } from "inversify";
 import { PurchaseOrderService, CreatePOParams } from "../services/poService";
-import { PurchaseOrder } from "@prisma/client";
+import { PurchaseOrder, POStatus } from "@prisma/client";
 
 @Route("orders")
 @Tags("Purchase Orders")
@@ -29,7 +31,7 @@ export class PurchaseOrderController extends Controller {
 
     @Get("{id}")
     public async getOrder(@Path() id: string): Promise<PurchaseOrder | null> {
-        return this.poService.getnodes(id);
+        return this.poService.getById(id);
     }
 
     @SuccessResponse("201", "Created")
@@ -39,5 +41,20 @@ export class PurchaseOrderController extends Controller {
     ): Promise<PurchaseOrder> {
         this.setStatus(201);
         return this.poService.create(requestBody);
+    }
+
+    @Put("{id}")
+    public async updateOrder(
+        @Path() id: string,
+        @Body() requestBody: Partial<CreatePOParams & { status: POStatus }>
+    ): Promise<PurchaseOrder> {
+        return this.poService.update(id, requestBody);
+    }
+
+    @SuccessResponse("204", "Deleted")
+    @Delete("{id}")
+    public async deleteOrder(@Path() id: string): Promise<void> {
+        await this.poService.delete(id);
+        this.setStatus(204);
     }
 }

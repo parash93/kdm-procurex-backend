@@ -40,10 +40,14 @@ export class SupplierService {
     }
 
     public async delete(id: string): Promise<void> {
-        // Hard delete for now as per strict CRUD request, OR we could soft delete.
-        // Given existing constraints, we should probably check for relations before hard delete.
-        // However, standard prisma delete will fail if relations exist (unless cascade delete is on).
-        // Let's implement delete.
+        const usageCount = await prisma.purchaseOrder.count({
+            where: { supplierId: id }
+        });
+
+        if (usageCount > 0) {
+            throw new Error(`Cannot delete supplier as they are linked to ${usageCount} purchase orders.`);
+        }
+
         await prisma.supplier.delete({
             where: { id },
         });
