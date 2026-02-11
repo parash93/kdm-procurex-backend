@@ -10,6 +10,7 @@
     },
     "routes": {
         "routesDir": "src/build",
-        "iocModule": "./src/ioc/ioc.ts"
+        "iocModule": "./src/ioc/ioc.ts",
+        "authenticationModule": "./src/middleware/authentication.ts"
     }
 }

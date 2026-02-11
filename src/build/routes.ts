@@ -22,11 +22,16 @@ import { DivisionController } from './../controllers/divisionController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { DashboardController } from './../controllers/dashboardController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { AuthController } from './../controllers/authController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ApprovalController } from './../controllers/approvalController';
+import { expressAuthentication } from './../middleware/authentication';
+// @ts-ignore - no great way to install types from subpackage
 import { iocContainer } from './../ioc/ioc';
 import type { IocContainer, IocContainerFactory } from '@tsoa/runtime';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
 
+const expressAuthenticationRecasted = expressAuthentication as (req: ExRequest, securityName: string, scopes?: string[], res?: ExResponse) => Promise<any>;
 
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -278,6 +283,44 @@ const models: TsoaRoute.Models = {
             "divisionName": {"dataType":"string","required":true},
             "count": {"dataType":"double","required":true},
             "totalAmount": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick_User.Exclude_keyofUser.passwordHash__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.Role","required":true},"createdAt":{"dataType":"datetime","required":true},"updatedAt":{"dataType":"datetime","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit_User.passwordHash_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick_User.Exclude_keyofUser.passwordHash__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AuthResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "user": {"ref":"Omit_User.passwordHash_","required":true},
+            "token": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "LoginParams": {
+        "dataType": "refObject",
+        "properties": {
+            "email": {"dataType":"string","required":true},
+            "password": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RegisterParams": {
+        "dataType": "refObject",
+        "properties": {
+            "email": {"dataType":"string","required":true},
+            "password": {"dataType":"string"},
+            "role": {"ref":"Role","required":true},
         },
         "additionalProperties": false,
     },
@@ -1574,6 +1617,148 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuthController_login: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"ref":"LoginParams"},
+        };
+        app.post('/auth/login',
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.login)),
+
+            async function AuthController_login(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuthController_login, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AuthController>(AuthController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'login',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuthController_register: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"ref":"RegisterParams"},
+        };
+        app.post('/auth/register',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.register)),
+
+            async function AuthController_register(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuthController_register, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AuthController>(AuthController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'register',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuthController_getUsers: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/auth/users',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.getUsers)),
+
+            async function AuthController_getUsers(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuthController_getUsers, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AuthController>(AuthController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getUsers',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuthController_deleteUser: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.delete('/auth/users/:id',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.deleteUser)),
+
+            async function AuthController_deleteUser(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuthController_deleteUser, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AuthController>(AuthController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'deleteUser',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsApprovalController_getHistory: Record<string, TsoaRoute.ParameterSchema> = {
                 poId: {"in":"path","name":"poId","required":true,"dataType":"string"},
         };
@@ -1647,6 +1832,76 @@ export function RegisterRoutes(app: Router) {
 
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
+
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+    function authenticateMiddleware(security: TsoaRoute.Security[] = []) {
+        return async function runAuthenticationMiddleware(request: any, response: any, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            // keep track of failed auth attempts so we can hand back the most
+            // recent one.  This behavior was previously existing so preserving it
+            // here
+            const failedAttempts: any[] = [];
+            const pushAndRethrow = (error: any) => {
+                failedAttempts.push(error);
+                throw error;
+            };
+
+            const secMethodOrPromises: Promise<any>[] = [];
+            for (const secMethod of security) {
+                if (Object.keys(secMethod).length > 1) {
+                    const secMethodAndPromises: Promise<any>[] = [];
+
+                    for (const name in secMethod) {
+                        secMethodAndPromises.push(
+                            expressAuthenticationRecasted(request, name, secMethod[name], response)
+                                .catch(pushAndRethrow)
+                        );
+                    }
+
+                    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+                    secMethodOrPromises.push(Promise.all(secMethodAndPromises)
+                        .then(users => { return users[0]; }));
+                } else {
+                    for (const name in secMethod) {
+                        secMethodOrPromises.push(
+                            expressAuthenticationRecasted(request, name, secMethod[name], response)
+                                .catch(pushAndRethrow)
+                        );
+                    }
+                }
+            }
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            try {
+                request['user'] = await Promise.any(secMethodOrPromises);
+
+                // Response was sent in middleware, abort
+                if (response.writableEnded) {
+                    return;
+                }
+
+                next();
+            }
+            catch(err) {
+                // Show most recent error as response
+                const error = failedAttempts.pop();
+                error.status = error.status || 401;
+
+                // Response was sent in middleware, abort
+                if (response.writableEnded) {
+                    return;
+                }
+                next(error);
+            }
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        }
+    }
 
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 }

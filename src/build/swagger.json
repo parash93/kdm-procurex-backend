@@ -792,6 +792,90 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Pick_User.Exclude_keyofUser.passwordHash__": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/_36_Enums.Role"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"email",
+					"role",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_User.passwordHash_": {
+				"$ref": "#/components/schemas/Pick_User.Exclude_keyofUser.passwordHash__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"AuthResponse": {
+				"properties": {
+					"user": {
+						"$ref": "#/components/schemas/Omit_User.passwordHash_"
+					},
+					"token": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"user",
+					"token"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LoginParams": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RegisterParams": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/Role"
+					}
+				},
+				"required": [
+					"email",
+					"role"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"DefaultSelection_Prisma._36_ApprovalPayload_": {
 				"properties": {
 					"decision": {
@@ -1936,6 +2020,142 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AuthResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Authentication"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"operationId": "Register",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Authentication"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RegisterParams"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/users": {
+			"get": {
+				"operationId": "GetUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/User"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Authentication"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/auth/users/{id}": {
+			"delete": {
+				"operationId": "DeleteUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Authentication"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/approvals/history/{poId}": {

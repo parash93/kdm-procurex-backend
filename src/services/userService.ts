@@ -1,6 +1,7 @@
 import { User, Role } from "@prisma/client";
 import { prisma } from "../repositories/prismaContext";
 import { injectable } from "inversify";
+import bcrypt from "bcryptjs";
 
 export interface UserCreationParams {
     email: string;
@@ -23,10 +24,11 @@ export class UserService {
     }
 
     public async create(params: UserCreationParams): Promise<User> {
+        const passwordHash = await bcrypt.hash(params.password || "password123", 10);
         return prisma.user.create({
             data: {
                 email: params.email,
-                passwordHash: "dummy-hash", // No auth implemented yet, using dummy
+                passwordHash,
                 role: params.role
             }
         });
@@ -41,15 +43,16 @@ export class UserService {
     public async seedInitialUsers(): Promise<void> {
         const count = await prisma.user.count();
         if (count === 0) {
+            const passwordHash = await bcrypt.hash("password", 10);
             await prisma.user.createMany({
                 data: [
-                    { email: "admin@kdm.com", passwordHash: "dummy", role: Role.ADMIN },
-                    { email: "purchase@kdm.com", passwordHash: "dummy", role: Role.PURCHASE_MANAGER },
-                    { email: "finance@kdm.com", passwordHash: "dummy", role: Role.FINANCE },
-                    { email: "ops@kdm.com", passwordHash: "dummy", role: Role.OPERATIONS },
+                    { email: "admin@kdm.com", passwordHash, role: Role.ADMIN },
+                    { email: "purchase@kdm.com", passwordHash, role: Role.PURCHASE_MANAGER },
+                    { email: "finance@kdm.com", passwordHash, role: Role.FINANCE },
+                    { email: "ops@kdm.com", passwordHash, role: Role.OPERATIONS },
                 ]
             });
-            console.log("Initial users seeded.");
+            console.log("Initial users seeded with hashed passwords.");
         }
     }
 }
