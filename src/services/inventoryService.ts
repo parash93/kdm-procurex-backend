@@ -25,6 +25,9 @@ export class InventoryService {
 
         return prisma.inventoryHistory.findMany({
             where: { inventoryId: inventory.id },
+            include: {
+                updatedByUser: true
+            },
             orderBy: { timestamp: 'desc' }
         });
     }

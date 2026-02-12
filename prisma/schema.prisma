@@ -9,15 +9,16 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  username     String     @unique
-  passwordHash String
-  role         Role       @default(OPERATIONS)
-  status       UserStatus @default(ACTIVE)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  approvals    Approval[]
-  stageUpdates StageUpdate[]
+  id               String             @id @default(uuid())
+  username         String             @unique
+  passwordHash     String
+  role             Role               @default(OPERATIONS)
+  status           UserStatus         @default(ACTIVE)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  approvals        Approval[]
+  stageUpdates     StageUpdate[]
+  inventoryHistory InventoryHistory[] @relation("InventoryHistoryUpdatedBy")
 }
 
 enum UserStatus {
@@ -122,16 +123,18 @@ model Inventory {
 }
 
 model InventoryHistory {
-  id          String   @id @default(uuid())
-  inventoryId String
-  type        String   // ADD / SUBTRACT
-  quantity    Int
-  reason      String?  // e.g., "Manually added", "PO Delivered: PO-123"
-  updatedBy   String   // username
-  timestamp   DateTime @default(now())
-  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  id            String    @id @default(uuid())
+  inventoryId   String
+  type          String    // ADD / SUBTRACT
+  quantity      Int
+  reason        String?   // e.g., "Manually added", "PO Delivered: PO-123"
+  updatedBy     String?   // user ID
+  timestamp     DateTime  @default(now())
+  inventory     Inventory @relation(fields: [inventoryId], references: [id])
+  updatedByUser User?     @relation("InventoryHistoryUpdatedBy", fields: [updatedBy], references: [id])
 
   @@index([inventoryId])
+  @@index([updatedBy])
 }
 
 model StageUpdate {
