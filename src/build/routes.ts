@@ -84,6 +84,7 @@ const models: TsoaRoute.Models = {
             "stage": {"dataType":"string","required":true},
             "notes": {"dataType":"string"},
             "photoUrl": {"dataType":"string"},
+            "updatedBy": {"dataType":"string"},
             "updatePOStatus": {"dataType":"boolean"},
         },
         "additionalProperties": false,
@@ -191,12 +192,12 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.POStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["DRAFT"]},{"dataType":"enum","enums":["PENDING_APPROVAL"]},{"dataType":"enum","enums":["APPROVED"]},{"dataType":"enum","enums":["REJECTED"]},{"dataType":"enum","enums":["SENT_TO_SUPPLIER"]},{"dataType":"enum","enums":["IN_PRODUCTION"]},{"dataType":"enum","enums":["READY"]},{"dataType":"enum","enums":["SHIPPED"]},{"dataType":"enum","enums":["IN_TRANSIT"]},{"dataType":"enum","enums":["DELIVERED"]},{"dataType":"enum","enums":["CLOSED"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["DRAFT"]},{"dataType":"enum","enums":["PENDING_APPROVAL"]},{"dataType":"enum","enums":["APPROVED"]},{"dataType":"enum","enums":["REJECTED"]},{"dataType":"enum","enums":["SENT_TO_SUPPLIER"]},{"dataType":"enum","enums":["IN_PRODUCTION"]},{"dataType":"enum","enums":["QUALITY_INSPECTION"]},{"dataType":"enum","enums":["READY_TO_SHIP"]},{"dataType":"enum","enums":["SHIPPED"]},{"dataType":"enum","enums":["IN_TRANSIT"]},{"dataType":"enum","enums":["PORT_CLEARANCE"]},{"dataType":"enum","enums":["DELIVERED"]},{"dataType":"enum","enums":["CLOSED"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_PurchaseOrderPayload_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"remarks":{"dataType":"string","required":true},"currency":{"dataType":"string","required":true},"expectedDeliveryDate":{"dataType":"datetime","required":true},"poDate":{"dataType":"datetime","required":true},"divisionId":{"dataType":"string","required":true},"supplierId":{"dataType":"string","required":true},"poNumber":{"dataType":"string","required":true},"paymentTerms":{"dataType":"string","required":true},"status":{"ref":"_36_Enums.POStatus","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"divisionId":{"dataType":"string","required":true},"remarks":{"dataType":"string","required":true},"currency":{"dataType":"string","required":true},"expectedDeliveryDate":{"dataType":"datetime","required":true},"poDate":{"dataType":"datetime","required":true},"supplierId":{"dataType":"string","required":true},"poNumber":{"dataType":"string","required":true},"paymentTerms":{"dataType":"string","required":true},"status":{"ref":"_36_Enums.POStatus","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "PurchaseOrder": {
@@ -539,8 +540,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsTrackingController_addUpdate: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"StageUpdateParams"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.post('/tracking',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(TrackingController)),
             ...(fetchMiddlewares<RequestHandler>(TrackingController.prototype.addUpdate)),
 

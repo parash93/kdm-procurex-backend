@@ -24,7 +24,9 @@ app.use("/docs", swaggerUi.serve, async (_req: ExRequest, res: ExResponse) => {
 });
 
 // Register Tsoa Routes
-RegisterRoutes(app);
+const router = express.Router();
+RegisterRoutes(router);
+app.use("/v1", router);
 
 // 404 Handler
 app.use(function notFoundHandler(_req, res: ExResponse) {

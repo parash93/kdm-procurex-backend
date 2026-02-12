@@ -87,7 +87,14 @@ export class PurchaseOrderService {
                         product: true
                     }
                 },
-                stageUpdates: true,
+                stageUpdates: {
+                    include: {
+                        updatedByUser: true
+                    },
+                    orderBy: {
+                        timestamp: 'desc'
+                    }
+                },
                 approvals: true
             }
         });

@@ -133,6 +133,9 @@
 					"photoUrl": {
 						"type": "string"
 					},
+					"updatedBy": {
+						"type": "string"
+					},
 					"updatePOStatus": {
 						"type": "boolean"
 					}
@@ -428,9 +431,11 @@
 					"REJECTED",
 					"SENT_TO_SUPPLIER",
 					"IN_PRODUCTION",
-					"READY",
+					"QUALITY_INSPECTION",
+					"READY_TO_SHIP",
 					"SHIPPED",
 					"IN_TRANSIT",
+					"PORT_CLEARANCE",
 					"DELIVERED",
 					"CLOSED",
 					"CANCELLED"
@@ -438,6 +443,9 @@
 			},
 			"DefaultSelection_Prisma._36_PurchaseOrderPayload_": {
 				"properties": {
+					"divisionId": {
+						"type": "string"
+					},
 					"remarks": {
 						"type": "string"
 					},
@@ -451,9 +459,6 @@
 					"poDate": {
 						"type": "string",
 						"format": "date-time"
-					},
-					"divisionId": {
-						"type": "string"
 					},
 					"supplierId": {
 						"type": "string"
@@ -480,11 +485,11 @@
 					}
 				},
 				"required": [
+					"divisionId",
 					"remarks",
 					"currency",
 					"expectedDeliveryDate",
 					"poDate",
-					"divisionId",
 					"supplierId",
 					"poNumber",
 					"paymentTerms",
@@ -1123,7 +1128,11 @@
 				"tags": [
 					"Tracking"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -2227,7 +2236,7 @@
 	},
 	"servers": [
 		{
-			"url": "/"
+			"url": "/v1"
 		}
 	]
 }

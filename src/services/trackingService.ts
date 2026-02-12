@@ -7,6 +7,7 @@ export interface StageUpdateParams {
     stage: string;
     notes?: string;
     photoUrl?: string;
+    updatedBy?: string;
     updatePOStatus?: boolean;
 }
 
@@ -19,7 +20,8 @@ export class TrackingService {
                     poId: params.poId,
                     stage: params.stage,
                     notes: params.notes,
-                    photoUrl: params.photoUrl
+                    photoUrl: params.photoUrl,
+                    updatedBy: params.updatedBy
                 }
             });
 
@@ -41,6 +43,9 @@ export class TrackingService {
     public async getHistory(poId: string): Promise<StageUpdate[]> {
         return prisma.stageUpdate.findMany({
             where: { poId },
+            include: {
+                updatedByUser: true
+            },
             orderBy: {
                 timestamp: 'desc'
             }

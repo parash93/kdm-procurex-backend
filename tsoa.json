@@ -6,7 +6,8 @@
     ],
     "spec": {
         "outputDirectory": "src/build",
-        "specVersion": 3
+        "specVersion": 3,
+        "basePath": "/v1"
     },
     "routes": {
         "routesDir": "src/build",

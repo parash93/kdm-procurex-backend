@@ -7,7 +7,10 @@ import {
     Path,
     SuccessResponse,
     Tags,
+    Security,
+    Request
 } from "tsoa";
+import * as express from "express";
 import { inject, injectable } from "inversify";
 import { TrackingService, StageUpdateParams } from "../services/trackingService";
 import { StageUpdate } from "@prisma/client";
@@ -29,10 +32,16 @@ export class TrackingController extends Controller {
 
     @SuccessResponse("201", "Created")
     @Post()
+    @Security("jwt")
     public async addUpdate(
-        @Body() requestBody: StageUpdateParams
+        @Body() requestBody: StageUpdateParams,
+        @Request() request: express.Request
     ): Promise<StageUpdate> {
         this.setStatus(201);
-        return this.trackingService.addStageUpdate(requestBody);
+        const user = (request as any).user;
+        return this.trackingService.addStageUpdate({
+            ...requestBody,
+            updatedBy: user?.id
+        });
     }
 }
