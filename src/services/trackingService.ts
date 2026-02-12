@@ -29,6 +29,67 @@ export class TrackingService {
             if (params.updatePOStatus) {
                 const statusValue = params.stage.toUpperCase().replace(/\s+/g, '_') as POStatus;
                 if (Object.values(POStatus).includes(statusValue)) {
+                    // Get current PO to check status transition
+                    const currentPO = await tx.purchaseOrder.findUnique({
+                        where: { id: params.poId },
+                        include: { items: true }
+                    });
+
+                    if (!currentPO) throw new Error("Purchase Order not found");
+
+                    // Handle Inventory Subtraction if status changing to DELIVERED
+                    if (statusValue === POStatus.DELIVERED && currentPO.status !== POStatus.DELIVERED) {
+                        for (const item of currentPO.items) {
+                            if (item.productId) {
+                                const inv = await tx.inventory.findUnique({
+                                    where: { productId: item.productId }
+                                });
+                                if (inv) {
+                                    await tx.inventory.update({
+                                        where: { id: inv.id },
+                                        data: { quantity: { decrement: item.quantity } }
+                                    });
+                                    await tx.inventoryHistory.create({
+                                        data: {
+                                            inventoryId: inv.id,
+                                            type: 'SUBTRACT',
+                                            quantity: item.quantity,
+                                            reason: `PO Delivered: ${currentPO.poNumber}`,
+                                            updatedBy: params.updatedBy || 'system'
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    // Handle Inventory Addition if status changing to RETURNED from DELIVERED
+                    if (statusValue === POStatus.RETURNED && currentPO.status === POStatus.DELIVERED) {
+                        for (const item of currentPO.items) {
+                            if (item.productId) {
+                                const inv = await tx.inventory.findUnique({
+                                    where: { productId: item.productId }
+                                });
+                                if (inv) {
+                                    await tx.inventory.update({
+                                        where: { id: inv.id },
+                                        data: { quantity: { increment: item.quantity } }
+                                    });
+                                    await tx.inventoryHistory.create({
+                                        data: {
+                                            inventoryId: inv.id,
+                                            type: 'ADD',
+                                            quantity: item.quantity,
+                                            reason: `PO Returned: ${currentPO.poNumber}`,
+                                            updatedBy: params.updatedBy || 'system'
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    // Update PO status
                     await tx.purchaseOrder.update({
                         where: { id: params.poId },
                         data: { status: statusValue }
@@ -37,6 +98,8 @@ export class TrackingService {
             }
 
             return update;
+        }, {
+            timeout: 15000 // 15 seconds to handle inventory updates
         });
     }
 

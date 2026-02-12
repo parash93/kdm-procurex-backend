@@ -6,25 +6,22 @@ import { Decimal } from "@prisma/client/runtime/library";
 export interface CreatePOParams {
     supplierId: string;
     divisionId?: string;
-    expectedDeliveryDate?: Date;
-    currency?: string;
-    paymentTerms?: string;
     remarks?: string;
     items: {
         productId?: string;
-        productName: string;
+        productName?: string;
         sku?: string;
         quantity: number;
         unitPrice: number;
         totalPrice: number;
         remarks?: string;
+        expectedDeliveryDate?: Date;
     }[];
 }
 
 @injectable()
 export class PurchaseOrderService {
     public async create(params: CreatePOParams): Promise<PurchaseOrder> {
-        // Generate PO Number: PO-YYYYMMDD-XXXX (last 4 of timestamp)
         const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
         const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
         const poNumber = `PO-${dateStr}-${randomStr}`;
@@ -34,20 +31,18 @@ export class PurchaseOrderService {
                 poNumber,
                 supplierId: params.supplierId,
                 divisionId: params.divisionId,
-                expectedDeliveryDate: params.expectedDeliveryDate,
-                currency: params.currency || "USD",
-                paymentTerms: params.paymentTerms,
                 remarks: params.remarks,
                 status: POStatus.DRAFT,
                 items: {
                     create: params.items.map(item => ({
                         productId: item.productId,
-                        productName: item.productName,
+                        productName: item.productName || "Product",
                         sku: item.sku,
                         quantity: item.quantity,
                         unitPrice: new Decimal(item.unitPrice),
                         totalPrice: new Decimal(item.totalPrice),
-                        remarks: item.remarks
+                        remarks: item.remarks,
+                        expectedDeliveryDate: item.expectedDeliveryDate
                     }))
                 }
             },
@@ -100,47 +95,106 @@ export class PurchaseOrderService {
                         timestamp: 'desc'
                     }
                 },
-                approvals: true
+                approvals: {
+                    include: {
+                        approver: true
+                    }
+                }
             }
         });
     }
 
-    public async update(id: string, params: Partial<CreatePOParams & { status: POStatus }>): Promise<PurchaseOrder> {
-        const { items, ...headerData } = params;
+    public async update(id: string, params: Partial<CreatePOParams & { status: POStatus, updatedByUsername?: string }>): Promise<PurchaseOrder> {
+        const { items, updatedByUsername, ...headerData } = params;
 
         return prisma.$transaction(async (tx) => {
+            const currentPO = await tx.purchaseOrder.findUnique({
+                where: { id },
+                include: { items: true }
+            });
+
+            if (!currentPO) throw new Error("PO not found");
+
+            // Handle Inventory Subtraction if status marked as DELIVERED
+            if (headerData.status === POStatus.DELIVERED && currentPO.status !== POStatus.DELIVERED) {
+                for (const item of currentPO.items) {
+                    if (item.productId) {
+                        const inv = await tx.inventory.findUnique({ where: { productId: item.productId } });
+                        if (inv) {
+                            await tx.inventory.update({
+                                where: { id: inv.id },
+                                data: { quantity: { decrement: item.quantity } }
+                            });
+                            await tx.inventoryHistory.create({
+                                data: {
+                                    inventoryId: inv.id,
+                                    type: 'SUBTRACT',
+                                    quantity: item.quantity,
+                                    reason: `PO Delivered: ${currentPO.poNumber}`,
+                                    updatedBy: updatedByUsername || 'system'
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Handle Inventory Addition if status marked as RETURNED (reversing delivery)
+            if (headerData.status === POStatus.RETURNED && currentPO.status === POStatus.DELIVERED) {
+                for (const item of currentPO.items) {
+                    if (item.productId) {
+                        const inv = await tx.inventory.findUnique({ where: { productId: item.productId } });
+                        if (inv) {
+                            await tx.inventory.update({
+                                where: { id: inv.id },
+                                data: { quantity: { increment: item.quantity } }
+                            });
+                            await tx.inventoryHistory.create({
+                                data: {
+                                    inventoryId: inv.id,
+                                    type: 'ADD',
+                                    quantity: item.quantity,
+                                    reason: `PO Returned: ${currentPO.poNumber}`,
+                                    updatedBy: updatedByUsername || 'system'
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
             // Update header
             const updatedPO = await tx.purchaseOrder.update({
                 where: { id },
                 data: {
                     supplierId: headerData.supplierId,
                     divisionId: headerData.divisionId,
-                    expectedDeliveryDate: headerData.expectedDeliveryDate,
-                    currency: headerData.currency,
-                    paymentTerms: headerData.paymentTerms,
                     remarks: headerData.remarks,
                     status: headerData.status,
                 }
             });
 
-            // If items are provided, replace them (Atomic: Delete then Re-create)
+            // If items are provided, replace them
             if (items) {
                 await tx.purchaseOrderItem.deleteMany({
                     where: { poId: id }
                 });
 
-                await tx.purchaseOrderItem.createMany({
-                    data: items.map(item => ({
-                        poId: id,
-                        productId: item.productId,
-                        productName: item.productName,
-                        sku: item.sku,
-                        quantity: item.quantity,
-                        unitPrice: new Decimal(item.unitPrice),
-                        totalPrice: new Decimal(item.totalPrice),
-                        remarks: item.remarks
-                    }))
-                });
+                for (const item of items) {
+                    await tx.purchaseOrderItem.create({
+                        data: {
+                            poId: id,
+                            productId: item.productId,
+                            productName: item.productName || "Product",
+                            sku: item.sku,
+                            quantity: item.quantity,
+                            unitPrice: new Decimal(item.unitPrice),
+                            totalPrice: new Decimal(item.totalPrice),
+                            remarks: item.remarks,
+                            expectedDeliveryDate: item.expectedDeliveryDate
+                        }
+                    });
+                }
             }
 
             return tx.purchaseOrder.findUniqueOrThrow({

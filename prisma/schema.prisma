@@ -50,11 +50,13 @@ model Product {
   name               String
   categoryId         String
   description        String?
+  minDeliveryDays    Int                 @default(0)
   status             EntityStatus        @default(ACTIVE)
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   category           ProductCategory     @relation(fields: [categoryId], references: [id])
   purchaseOrderItems PurchaseOrderItem[]
+  inventory          Inventory?
 
   @@index([categoryId])
 }
@@ -77,10 +79,7 @@ model PurchaseOrder {
   poNumber             String              @unique
   supplierId           String
   poDate               DateTime            @default(now())
-  expectedDeliveryDate DateTime?
   status               POStatus            @default(DRAFT)
-  currency             String              @default("USD")
-  paymentTerms         String?
   remarks              String?
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
@@ -96,20 +95,43 @@ model PurchaseOrder {
 }
 
 model PurchaseOrderItem {
-  id            String        @id @default(uuid())
-  poId          String
-  productName   String
-  sku           String?
-  quantity      Int
-  unitPrice     Decimal
-  totalPrice    Decimal
-  remarks       String?
-  productId     String?
-  purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id])
-  product       Product?      @relation(fields: [productId], references: [id])
+  id                   String        @id @default(uuid())
+  poId                 String
+  productName          String?
+  sku                  String?
+  quantity             Int
+  unitPrice            Decimal
+  totalPrice           Decimal
+  remarks              String?
+  productId            String?
+  expectedDeliveryDate DateTime?
+  purchaseOrder        PurchaseOrder @relation(fields: [poId], references: [id])
+  product              Product?      @relation(fields: [productId], references: [id])
 
   @@index([poId])
   @@index([productId])
+}
+
+model Inventory {
+  id        String             @id @default(uuid())
+  productId String             @unique
+  quantity  Int                @default(0)
+  updatedAt DateTime           @updatedAt
+  product   Product            @relation(fields: [productId], references: [id])
+  history   InventoryHistory[]
+}
+
+model InventoryHistory {
+  id          String   @id @default(uuid())
+  inventoryId String
+  type        String   // ADD / SUBTRACT
+  quantity    Int
+  reason      String?  // e.g., "Manually added", "PO Delivered: PO-123"
+  updatedBy   String   // username
+  timestamp   DateTime @default(now())
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+
+  @@index([inventoryId])
 }
 
 model StageUpdate {
@@ -145,9 +167,7 @@ model Approval {
 
 enum Role {
   ADMIN
-  PURCHASE_MANAGER
   OPERATIONS
-  FINANCE
 }
 
 enum EntityStatus {
@@ -166,10 +186,10 @@ enum SupplierStatus {
 
 enum POStatus {
   DRAFT
-  PENDING_APPROVAL
-  APPROVED
-  REJECTED
-  SENT_TO_SUPPLIER
+  PENDING_L1
+  APPROVED_L1
+  REJECTED_L1
+  ORDER_PLACED
   IN_PRODUCTION
   QUALITY_INSPECTION
   READY_TO_SHIP
@@ -177,6 +197,7 @@ enum POStatus {
   IN_TRANSIT
   PORT_CLEARANCE
   DELIVERED
+  RETURNED
   CLOSED
   CANCELLED
   DELETED

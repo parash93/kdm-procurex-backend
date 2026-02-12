@@ -53,8 +53,6 @@ export class UserService {
             await prisma.user.createMany({
                 data: [
                     { username: "admin", passwordHash, role: Role.ADMIN },
-                    { username: "purchase_manager", passwordHash, role: Role.PURCHASE_MANAGER },
-                    { username: "finance", passwordHash, role: Role.FINANCE },
                     { username: "ops", passwordHash, role: Role.OPERATIONS },
                 ]
             });

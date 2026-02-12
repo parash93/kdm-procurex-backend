@@ -4,49 +4,38 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-    const passwordHash = await bcrypt.hash('password', 10);
+    const passwordHash = await bcrypt.hash('admin', 10);
 
     const admin = await prisma.user.upsert({
-        where: { email: 'admin@kdm.com' },
-        update: {},
+        where: { username: 'admin' },
+        update: {
+            role: Role.ADMIN,
+            passwordHash
+        },
         create: {
-            email: 'admin@kdm.com',
+            username: 'admin',
             passwordHash,
             role: Role.ADMIN,
         },
     });
 
-    console.log({ admin });
+    console.log('Created/Updated Admin User:', admin.username);
 
-    await prisma.user.upsert({
-        where: { email: 'purchase@kdm.com' },
-        update: {},
-        create: {
-            email: 'purchase@kdm.com',
-            passwordHash,
-            role: Role.PURCHASE_MANAGER,
+    const opsPasswordHash = await bcrypt.hash('ops', 10);
+    const ops = await prisma.user.upsert({
+        where: { username: 'ops' },
+        update: {
+            role: Role.OPERATIONS,
+            passwordHash: opsPasswordHash
         },
-    });
-
-    await prisma.user.upsert({
-        where: { email: 'finance@kdm.com' },
-        update: {},
         create: {
-            email: 'finance@kdm.com',
-            passwordHash,
-            role: Role.FINANCE,
-        },
-    });
-
-    await prisma.user.upsert({
-        where: { email: 'ops@kdm.com' },
-        update: {},
-        create: {
-            email: 'ops@kdm.com',
-            passwordHash,
+            username: 'ops',
+            passwordHash: opsPasswordHash,
             role: Role.OPERATIONS,
         },
     });
+
+    console.log('Created/Updated Ops User:', ops.username);
 }
 
 main()

@@ -29,14 +29,33 @@ export class ApprovalService {
             let newStatus: POStatus | undefined;
 
             if (params.decision === "REJECTED") {
-                newStatus = POStatus.REJECTED;
+                newStatus = POStatus.REJECTED_L1;
             } else {
-                // If Level 1 is approved, we stay in PENDING_APPROVAL but wait for Level 2
-                // If Level 2 is approved, we move to APPROVED
                 if (params.level === 1) {
-                    newStatus = POStatus.PENDING_APPROVAL; // Or a more specific status if added
+                    newStatus = POStatus.APPROVED_L1;
                 } else if (params.level === 2) {
-                    newStatus = POStatus.APPROVED;
+                    // CRITICAL: Check inventory before L2 Approval
+                    const po = await tx.purchaseOrder.findUnique({
+                        where: { id: params.poId },
+                        include: { items: true }
+                    });
+
+                    if (!po) throw new Error("Purchase Order not found");
+
+                    for (const item of po.items) {
+                        if (item.productId) {
+                            const inv = await tx.inventory.findUnique({
+                                where: { productId: item.productId },
+                                include: { product: true }
+                            });
+
+                            if (!inv || inv.quantity < item.quantity) {
+                                throw new Error(`Insufficient stock for product: ${inv?.product?.name || item.productName}. Required: ${item.quantity}, Available: ${inv?.quantity || 0}`);
+                            }
+                        }
+                    }
+
+                    newStatus = POStatus.ORDER_PLACED;
                 }
             }
 

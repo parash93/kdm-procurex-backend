@@ -5,7 +5,7 @@ import {
     Tags,
 } from "tsoa";
 import { inject, injectable } from "inversify";
-import { DashboardService, DashboardStats, OrdersByStatus, OrdersByDivision } from "../services/dashboardService";
+import { DashboardService, DashboardStats, OrdersByDivision } from "../services/dashboardService";
 
 @Route("dashboard")
 @Tags("Dashboard")
@@ -25,11 +25,6 @@ export class DashboardController extends Controller {
     @Get("delayed")
     public async getDelayedOrders(): Promise<any[]> {
         return this.dashboardService.getDelayedOrders();
-    }
-
-    @Get("by-status")
-    public async getOrdersByStatus(): Promise<OrdersByStatus[]> {
-        return this.dashboardService.getOrdersByStatus();
     }
 
     @Get("by-division")

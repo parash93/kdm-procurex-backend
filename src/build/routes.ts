@@ -16,6 +16,8 @@ import { ProductCategoryController } from './../controllers/productCategoryContr
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PurchaseOrderController } from './../controllers/poController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { InventoryController } from './../controllers/inventoryController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { HealthController } from './../controllers/healthController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { DivisionController } from './../controllers/divisionController';
@@ -39,7 +41,7 @@ const expressAuthenticationRecasted = expressAuthentication as (req: ExRequest, 
 const models: TsoaRoute.Models = {
     "_36_Enums.Role": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADMIN"]},{"dataType":"enum","enums":["PURCHASE_MANAGER"]},{"dataType":"enum","enums":["OPERATIONS"]},{"dataType":"enum","enums":["FINANCE"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADMIN"]},{"dataType":"enum","enums":["OPERATIONS"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.UserStatus": {
@@ -142,7 +144,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_ProductPayload_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"description":{"dataType":"string","required":true},"categoryId":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"status":{"ref":"_36_Enums.EntityStatus","required":true},"id":{"dataType":"string","required":true},"name":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"minDeliveryDays":{"dataType":"double","required":true},"description":{"dataType":"string","required":true},"categoryId":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"status":{"ref":"_36_Enums.EntityStatus","required":true},"id":{"dataType":"string","required":true},"name":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Product": {
@@ -161,6 +163,7 @@ const models: TsoaRoute.Models = {
             "name": {"dataType":"string","required":true},
             "categoryId": {"dataType":"string","required":true},
             "description": {"dataType":"string"},
+            "minDeliveryDays": {"dataType":"double"},
             "status": {"ref":"EntityStatus"},
         },
         "additionalProperties": false,
@@ -168,7 +171,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Partial_ProductCreationParams_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"categoryId":{"dataType":"string"},"description":{"dataType":"string"},"status":{"ref":"_36_Enums.EntityStatus"}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"categoryId":{"dataType":"string"},"description":{"dataType":"string"},"minDeliveryDays":{"dataType":"double"},"status":{"ref":"_36_Enums.EntityStatus"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_ProductCategoryPayload_": {
@@ -197,12 +200,12 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.POStatus": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["DELETED"]},{"dataType":"enum","enums":["DRAFT"]},{"dataType":"enum","enums":["PENDING_APPROVAL"]},{"dataType":"enum","enums":["APPROVED"]},{"dataType":"enum","enums":["REJECTED"]},{"dataType":"enum","enums":["SENT_TO_SUPPLIER"]},{"dataType":"enum","enums":["IN_PRODUCTION"]},{"dataType":"enum","enums":["QUALITY_INSPECTION"]},{"dataType":"enum","enums":["READY_TO_SHIP"]},{"dataType":"enum","enums":["SHIPPED"]},{"dataType":"enum","enums":["IN_TRANSIT"]},{"dataType":"enum","enums":["PORT_CLEARANCE"]},{"dataType":"enum","enums":["DELIVERED"]},{"dataType":"enum","enums":["CLOSED"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["DELETED"]},{"dataType":"enum","enums":["DRAFT"]},{"dataType":"enum","enums":["PENDING_L1"]},{"dataType":"enum","enums":["APPROVED_L1"]},{"dataType":"enum","enums":["REJECTED_L1"]},{"dataType":"enum","enums":["ORDER_PLACED"]},{"dataType":"enum","enums":["IN_PRODUCTION"]},{"dataType":"enum","enums":["QUALITY_INSPECTION"]},{"dataType":"enum","enums":["READY_TO_SHIP"]},{"dataType":"enum","enums":["SHIPPED"]},{"dataType":"enum","enums":["IN_TRANSIT"]},{"dataType":"enum","enums":["PORT_CLEARANCE"]},{"dataType":"enum","enums":["DELIVERED"]},{"dataType":"enum","enums":["RETURNED"]},{"dataType":"enum","enums":["CLOSED"]},{"dataType":"enum","enums":["CANCELLED"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_PurchaseOrderPayload_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"divisionId":{"dataType":"string","required":true},"remarks":{"dataType":"string","required":true},"currency":{"dataType":"string","required":true},"expectedDeliveryDate":{"dataType":"datetime","required":true},"poDate":{"dataType":"datetime","required":true},"supplierId":{"dataType":"string","required":true},"poNumber":{"dataType":"string","required":true},"paymentTerms":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"status":{"ref":"_36_Enums.POStatus","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"divisionId":{"dataType":"string","required":true},"remarks":{"dataType":"string","required":true},"poDate":{"dataType":"datetime","required":true},"supplierId":{"dataType":"string","required":true},"poNumber":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"status":{"ref":"_36_Enums.POStatus","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "PurchaseOrder": {
@@ -215,18 +218,27 @@ const models: TsoaRoute.Models = {
         "properties": {
             "supplierId": {"dataType":"string","required":true},
             "divisionId": {"dataType":"string"},
-            "expectedDeliveryDate": {"dataType":"datetime"},
-            "currency": {"dataType":"string"},
-            "paymentTerms": {"dataType":"string"},
             "remarks": {"dataType":"string"},
-            "items": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"remarks":{"dataType":"string"},"totalPrice":{"dataType":"double","required":true},"unitPrice":{"dataType":"double","required":true},"quantity":{"dataType":"double","required":true},"sku":{"dataType":"string"},"productName":{"dataType":"string","required":true},"productId":{"dataType":"string"}}},"required":true},
+            "items": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"expectedDeliveryDate":{"dataType":"datetime"},"remarks":{"dataType":"string"},"totalPrice":{"dataType":"double","required":true},"unitPrice":{"dataType":"double","required":true},"quantity":{"dataType":"double","required":true},"sku":{"dataType":"string"},"productName":{"dataType":"string"},"productId":{"dataType":"string"}}},"required":true},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Partial_CreatePOParams-and-_status-POStatus__": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"supplierId":{"dataType":"string"},"divisionId":{"dataType":"string"},"expectedDeliveryDate":{"dataType":"datetime"},"currency":{"dataType":"string"},"paymentTerms":{"dataType":"string"},"remarks":{"dataType":"string"},"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"remarks":{"dataType":"string"},"totalPrice":{"dataType":"double","required":true},"unitPrice":{"dataType":"double","required":true},"quantity":{"dataType":"double","required":true},"sku":{"dataType":"string"},"productName":{"dataType":"string","required":true},"productId":{"dataType":"string"}}}},"status":{"ref":"_36_Enums.POStatus"}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"supplierId":{"dataType":"string"},"divisionId":{"dataType":"string"},"remarks":{"dataType":"string"},"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"expectedDeliveryDate":{"dataType":"datetime"},"remarks":{"dataType":"string"},"totalPrice":{"dataType":"double","required":true},"unitPrice":{"dataType":"double","required":true},"quantity":{"dataType":"double","required":true},"sku":{"dataType":"string"},"productName":{"dataType":"string"},"productId":{"dataType":"string"}}}},"status":{"ref":"_36_Enums.POStatus"}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateStockParams": {
+        "dataType": "refObject",
+        "properties": {
+            "productId": {"dataType":"string","required":true},
+            "quantity": {"dataType":"double","required":true},
+            "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADD"]},{"dataType":"enum","enums":["SUBTRACT"]}],"required":true},
+            "reason": {"dataType":"string","required":true},
+            "updatedBy": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_DivisionPayload_": {
@@ -254,31 +266,23 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"contactPerson":{"dataType":"string"},"status":{"ref":"_36_Enums.EntityStatus"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Record_string.number_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"double"},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DashboardStats": {
         "dataType": "refObject",
         "properties": {
             "totalOrders": {"dataType":"double","required":true},
             "activeOrders": {"dataType":"double","required":true},
-            "pendingApprovals": {"dataType":"double","required":true},
+            "pendingApproval": {"dataType":"double","required":true},
             "delayedOrders": {"dataType":"double","required":true},
             "totalSuppliers": {"dataType":"double","required":true},
             "totalDivisions": {"dataType":"double","required":true},
             "totalProducts": {"dataType":"double","required":true},
             "totalCategories": {"dataType":"double","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "POStatus": {
-        "dataType": "refAlias",
-        "type": {"ref":"_36_Enums.POStatus","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "OrdersByStatus": {
-        "dataType": "refObject",
-        "properties": {
-            "status": {"ref":"POStatus","required":true},
-            "count": {"dataType":"double","required":true},
+            "statusCounts": {"ref":"Record_string.number_","required":true},
         },
         "additionalProperties": false,
     },
@@ -333,7 +337,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_ApprovalPayload_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"decision":{"dataType":"string","required":true},"level":{"dataType":"double","required":true},"approverId":{"dataType":"string","required":true},"remarks":{"dataType":"string","required":true},"timestamp":{"dataType":"datetime","required":true},"poId":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"decision":{"dataType":"string","required":true},"approverId":{"dataType":"string","required":true},"level":{"dataType":"double","required":true},"remarks":{"dataType":"string","required":true},"timestamp":{"dataType":"datetime","required":true},"poId":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Approval": {
@@ -1280,6 +1284,110 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsInventoryController_getInventory: Record<string, TsoaRoute.ParameterSchema> = {
+        };
+        app.get('/inventory',
+            ...(fetchMiddlewares<RequestHandler>(InventoryController)),
+            ...(fetchMiddlewares<RequestHandler>(InventoryController.prototype.getInventory)),
+
+            async function InventoryController_getInventory(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsInventoryController_getInventory, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<InventoryController>(InventoryController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getInventory',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsInventoryController_getHistory: Record<string, TsoaRoute.ParameterSchema> = {
+                productId: {"in":"path","name":"productId","required":true,"dataType":"string"},
+        };
+        app.get('/inventory/history/:productId',
+            ...(fetchMiddlewares<RequestHandler>(InventoryController)),
+            ...(fetchMiddlewares<RequestHandler>(InventoryController.prototype.getHistory)),
+
+            async function InventoryController_getHistory(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsInventoryController_getHistory, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<InventoryController>(InventoryController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getHistory',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsInventoryController_updateStock: Record<string, TsoaRoute.ParameterSchema> = {
+                requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateStockParams"},
+        };
+        app.post('/inventory/update',
+            ...(fetchMiddlewares<RequestHandler>(InventoryController)),
+            ...(fetchMiddlewares<RequestHandler>(InventoryController.prototype.updateStock)),
+
+            async function InventoryController_updateStock(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsInventoryController_updateStock, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<InventoryController>(InventoryController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'updateStock',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsHealthController_getHealth: Record<string, TsoaRoute.ParameterSchema> = {
         };
         app.get('/health',
@@ -1546,40 +1654,6 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'getDelayedOrders',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsDashboardController_getOrdersByStatus: Record<string, TsoaRoute.ParameterSchema> = {
-        };
-        app.get('/dashboard/by-status',
-            ...(fetchMiddlewares<RequestHandler>(DashboardController)),
-            ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.getOrdersByStatus)),
-
-            async function DashboardController_getOrdersByStatus(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsDashboardController_getOrdersByStatus, request, response });
-
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
-
-                const controller: any = await container.get<DashboardController>(DashboardController);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
-
-              await templateService.apiHandler({
-                methodName: 'getOrdersByStatus',
                 controller,
                 response,
                 next,

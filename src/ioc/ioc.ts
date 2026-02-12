@@ -21,6 +21,8 @@ import { DashboardService } from "../services/dashboardService";
 import { DashboardController } from "../controllers/dashboardController";
 import { AuthService } from "../services/authService";
 import { AuthController } from "../controllers/authController";
+import { InventoryService } from "../services/inventoryService";
+import { InventoryController } from "../controllers/inventoryController";
 
 const iocContainer = new Container();
 
@@ -47,5 +49,7 @@ iocContainer.bind<DashboardService>(DashboardService).toSelf().inSingletonScope(
 iocContainer.bind<DashboardController>(DashboardController).toSelf().inSingletonScope();
 iocContainer.bind<AuthService>(AuthService).toSelf().inSingletonScope();
 iocContainer.bind<AuthController>(AuthController).toSelf().inSingletonScope();
+iocContainer.bind<InventoryService>(InventoryService).toSelf().inSingletonScope();
+iocContainer.bind<InventoryController>(InventoryController).toSelf().inSingletonScope();
 
 export { iocContainer };

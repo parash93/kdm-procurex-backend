@@ -5,17 +5,13 @@ import { injectable } from "inversify";
 export interface DashboardStats {
     totalOrders: number;
     activeOrders: number;
-    pendingApprovals: number;
+    pendingApproval: number;
     delayedOrders: number;
     totalSuppliers: number;
     totalDivisions: number;
     totalProducts: number;
     totalCategories: number;
-}
-
-export interface OrdersByStatus {
-    status: POStatus;
-    count: number;
+    statusCounts: Record<string, number>;
 }
 
 export interface OrdersByDivision {
@@ -32,49 +28,63 @@ export class DashboardService {
         const [
             totalOrders,
             activeOrders,
-            pendingApprovals,
-            delayedOrders,
             totalSuppliers,
             totalDivisions,
             totalProducts,
-            totalCategories
+            totalCategories,
+            statusCountsRaw
         ] = await Promise.all([
             prisma.purchaseOrder.count(),
             prisma.purchaseOrder.count({
                 where: {
                     status: {
-                        notIn: [POStatus.DELIVERED, POStatus.CLOSED, POStatus.REJECTED]
-                    }
-                }
-            }),
-            prisma.purchaseOrder.count({
-                where: { status: POStatus.PENDING_APPROVAL }
-            }),
-            prisma.purchaseOrder.count({
-                where: {
-                    status: {
-                        notIn: [POStatus.DELIVERED, POStatus.CLOSED, POStatus.REJECTED, POStatus.DRAFT]
-                    },
-                    expectedDeliveryDate: {
-                        lt: now
+                        notIn: [POStatus.DELIVERED, POStatus.CLOSED, POStatus.REJECTED_L1, POStatus.CANCELLED]
                     }
                 }
             }),
             prisma.supplier.count(),
             prisma.division.count(),
             prisma.product.count(),
-            prisma.productCategory.count()
+            prisma.productCategory.count(),
+            prisma.purchaseOrder.groupBy({
+                by: ['status'],
+                _count: { id: true }
+            })
         ]);
+
+        const statusCounts: Record<string, number> = {};
+        statusCountsRaw.forEach(item => {
+            statusCounts[item.status] = item._count.id;
+        });
+
+        const pendingApproval = (statusCounts[POStatus.PENDING_L1] || 0);
+
+        // Delayed check: find orders where at least one item is delayed
+        const delayedOrdersCount = await prisma.purchaseOrder.count({
+            where: {
+                status: {
+                    notIn: [POStatus.DELIVERED, POStatus.CLOSED, POStatus.REJECTED_L1, POStatus.DRAFT, POStatus.CANCELLED]
+                },
+                items: {
+                    some: {
+                        expectedDeliveryDate: {
+                            lt: now
+                        }
+                    }
+                }
+            }
+        });
 
         return {
             totalOrders,
             activeOrders,
-            pendingApprovals,
-            delayedOrders,
+            pendingApproval,
+            delayedOrders: delayedOrdersCount,
             totalSuppliers,
             totalDivisions,
             totalProducts,
-            totalCategories
+            totalCategories,
+            statusCounts
         };
     }
 
@@ -83,31 +93,22 @@ export class DashboardService {
         return prisma.purchaseOrder.findMany({
             where: {
                 status: {
-                    notIn: [POStatus.DELIVERED, POStatus.CLOSED, POStatus.REJECTED, POStatus.DRAFT]
+                    notIn: [POStatus.DELIVERED, POStatus.CLOSED, POStatus.REJECTED_L1, POStatus.DRAFT, POStatus.CANCELLED]
                 },
-                expectedDeliveryDate: {
-                    lt: now
+                items: {
+                    some: {
+                        expectedDeliveryDate: {
+                            lt: now
+                        }
+                    }
                 }
             },
             include: {
                 supplier: true,
-                division: true
+                division: true,
+                items: true
             }
         });
-    }
-
-    public async getOrdersByStatus(): Promise<OrdersByStatus[]> {
-        const grouped = await prisma.purchaseOrder.groupBy({
-            by: ['status'],
-            _count: {
-                id: true
-            }
-        });
-
-        return grouped.map(g => ({
-            status: g.status,
-            count: g._count.id
-        }));
     }
 
     public async getOrdersByDivision(): Promise<OrdersByDivision[]> {

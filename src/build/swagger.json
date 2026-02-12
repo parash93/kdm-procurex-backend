@@ -11,9 +11,7 @@
 				"type": "string",
 				"enum": [
 					"ADMIN",
-					"PURCHASE_MANAGER",
-					"OPERATIONS",
-					"FINANCE"
+					"OPERATIONS"
 				]
 			},
 			"_36_Enums.UserStatus": {
@@ -294,6 +292,10 @@
 			},
 			"DefaultSelection_Prisma._36_ProductPayload_": {
 				"properties": {
+					"minDeliveryDays": {
+						"type": "number",
+						"format": "double"
+					},
 					"description": {
 						"type": "string"
 					},
@@ -319,6 +321,7 @@
 					}
 				},
 				"required": [
+					"minDeliveryDays",
 					"description",
 					"categoryId",
 					"updatedAt",
@@ -347,6 +350,10 @@
 					"description": {
 						"type": "string"
 					},
+					"minDeliveryDays": {
+						"type": "number",
+						"format": "double"
+					},
 					"status": {
 						"$ref": "#/components/schemas/EntityStatus"
 					}
@@ -368,6 +375,10 @@
 					},
 					"description": {
 						"type": "string"
+					},
+					"minDeliveryDays": {
+						"type": "number",
+						"format": "double"
 					},
 					"status": {
 						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
@@ -441,10 +452,10 @@
 				"enum": [
 					"DELETED",
 					"DRAFT",
-					"PENDING_APPROVAL",
-					"APPROVED",
-					"REJECTED",
-					"SENT_TO_SUPPLIER",
+					"PENDING_L1",
+					"APPROVED_L1",
+					"REJECTED_L1",
+					"ORDER_PLACED",
 					"IN_PRODUCTION",
 					"QUALITY_INSPECTION",
 					"READY_TO_SHIP",
@@ -452,6 +463,7 @@
 					"IN_TRANSIT",
 					"PORT_CLEARANCE",
 					"DELIVERED",
+					"RETURNED",
 					"CLOSED",
 					"CANCELLED"
 				]
@@ -464,13 +476,6 @@
 					"remarks": {
 						"type": "string"
 					},
-					"currency": {
-						"type": "string"
-					},
-					"expectedDeliveryDate": {
-						"type": "string",
-						"format": "date-time"
-					},
 					"poDate": {
 						"type": "string",
 						"format": "date-time"
@@ -479,9 +484,6 @@
 						"type": "string"
 					},
 					"poNumber": {
-						"type": "string"
-					},
-					"paymentTerms": {
 						"type": "string"
 					},
 					"updatedAt": {
@@ -502,12 +504,9 @@
 				"required": [
 					"divisionId",
 					"remarks",
-					"currency",
-					"expectedDeliveryDate",
 					"poDate",
 					"supplierId",
 					"poNumber",
-					"paymentTerms",
 					"updatedAt",
 					"createdAt",
 					"status",
@@ -527,22 +526,16 @@
 					"divisionId": {
 						"type": "string"
 					},
-					"expectedDeliveryDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"currency": {
-						"type": "string"
-					},
-					"paymentTerms": {
-						"type": "string"
-					},
 					"remarks": {
 						"type": "string"
 					},
 					"items": {
 						"items": {
 							"properties": {
+								"expectedDeliveryDate": {
+									"type": "string",
+									"format": "date-time"
+								},
 								"remarks": {
 									"type": "string"
 								},
@@ -571,8 +564,7 @@
 							"required": [
 								"totalPrice",
 								"unitPrice",
-								"quantity",
-								"productName"
+								"quantity"
 							],
 							"type": "object"
 						},
@@ -594,22 +586,16 @@
 					"divisionId": {
 						"type": "string"
 					},
-					"expectedDeliveryDate": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"currency": {
-						"type": "string"
-					},
-					"paymentTerms": {
-						"type": "string"
-					},
 					"remarks": {
 						"type": "string"
 					},
 					"items": {
 						"items": {
 							"properties": {
+								"expectedDeliveryDate": {
+									"type": "string",
+									"format": "date-time"
+								},
 								"remarks": {
 									"type": "string"
 								},
@@ -638,8 +624,7 @@
 							"required": [
 								"totalPrice",
 								"unitPrice",
-								"quantity",
-								"productName"
+								"quantity"
 							],
 							"type": "object"
 						},
@@ -651,6 +636,39 @@
 				},
 				"type": "object",
 				"description": "Make all properties in T optional"
+			},
+			"UpdateStockParams": {
+				"properties": {
+					"productId": {
+						"type": "string"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"ADD",
+							"SUBTRACT"
+						]
+					},
+					"reason": {
+						"type": "string"
+					},
+					"updatedBy": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"productId",
+					"quantity",
+					"type",
+					"reason",
+					"updatedBy"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"DefaultSelection_Prisma._36_DivisionPayload_": {
 				"properties": {
@@ -722,6 +740,15 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
+			"Record_string.number_": {
+				"properties": {},
+				"additionalProperties": {
+					"type": "number",
+					"format": "double"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
 			"DashboardStats": {
 				"properties": {
 					"totalOrders": {
@@ -732,7 +759,7 @@
 						"type": "number",
 						"format": "double"
 					},
-					"pendingApprovals": {
+					"pendingApproval": {
 						"type": "number",
 						"format": "double"
 					},
@@ -755,37 +782,21 @@
 					"totalCategories": {
 						"type": "number",
 						"format": "double"
+					},
+					"statusCounts": {
+						"$ref": "#/components/schemas/Record_string.number_"
 					}
 				},
 				"required": [
 					"totalOrders",
 					"activeOrders",
-					"pendingApprovals",
+					"pendingApproval",
 					"delayedOrders",
 					"totalSuppliers",
 					"totalDivisions",
 					"totalProducts",
-					"totalCategories"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"POStatus": {
-				"$ref": "#/components/schemas/_36_Enums.POStatus"
-			},
-			"OrdersByStatus": {
-				"properties": {
-					"status": {
-						"$ref": "#/components/schemas/POStatus"
-					},
-					"count": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"status",
-					"count"
+					"totalCategories",
+					"statusCounts"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -905,12 +916,12 @@
 					"decision": {
 						"type": "string"
 					},
+					"approverId": {
+						"type": "string"
+					},
 					"level": {
 						"type": "number",
 						"format": "double"
-					},
-					"approverId": {
-						"type": "string"
 					},
 					"remarks": {
 						"type": "string"
@@ -928,8 +939,8 @@
 				},
 				"required": [
 					"decision",
-					"level",
 					"approverId",
+					"level",
 					"remarks",
 					"timestamp",
 					"poId",
@@ -1773,6 +1784,270 @@
 				]
 			}
 		},
+		"/inventory": {
+			"get": {
+				"operationId": "GetInventory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"allOf": [
+											{
+												"properties": {
+													"product": {
+														"allOf": [
+															{
+																"properties": {
+																	"category": {
+																		"properties": {
+																			"updatedAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"createdAt": {
+																				"type": "string",
+																				"format": "date-time"
+																			},
+																			"status": {
+																				"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+																			},
+																			"id": {
+																				"type": "string"
+																			},
+																			"name": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"updatedAt",
+																			"createdAt",
+																			"status",
+																			"id",
+																			"name"
+																		],
+																		"type": "object"
+																	}
+																},
+																"required": [
+																	"category"
+																],
+																"type": "object"
+															},
+															{
+																"properties": {
+																	"minDeliveryDays": {
+																		"type": "number",
+																		"format": "double"
+																	},
+																	"description": {
+																		"type": "string"
+																	},
+																	"categoryId": {
+																		"type": "string"
+																	},
+																	"updatedAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"createdAt": {
+																		"type": "string",
+																		"format": "date-time"
+																	},
+																	"status": {
+																		"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+																	},
+																	"id": {
+																		"type": "string"
+																	},
+																	"name": {
+																		"type": "string"
+																	}
+																},
+																"required": [
+																	"minDeliveryDays",
+																	"description",
+																	"categoryId",
+																	"updatedAt",
+																	"createdAt",
+																	"status",
+																	"id",
+																	"name"
+																],
+																"type": "object"
+															}
+														]
+													}
+												},
+												"required": [
+													"product"
+												],
+												"type": "object"
+											},
+											{
+												"properties": {
+													"quantity": {
+														"type": "number",
+														"format": "double"
+													},
+													"productId": {
+														"type": "string"
+													},
+													"updatedAt": {
+														"type": "string",
+														"format": "date-time"
+													},
+													"id": {
+														"type": "string"
+													}
+												},
+												"required": [
+													"quantity",
+													"productId",
+													"updatedAt",
+													"id"
+												],
+												"type": "object"
+											}
+										]
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Inventory"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/inventory/history/{productId}": {
+			"get": {
+				"operationId": "GetHistory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"properties": {
+											"reason": {
+												"type": "string"
+											},
+											"type": {
+												"type": "string"
+											},
+											"inventoryId": {
+												"type": "string"
+											},
+											"quantity": {
+												"type": "number",
+												"format": "double"
+											},
+											"timestamp": {
+												"type": "string",
+												"format": "date-time"
+											},
+											"updatedBy": {
+												"type": "string"
+											},
+											"id": {
+												"type": "string"
+											}
+										},
+										"required": [
+											"reason",
+											"type",
+											"inventoryId",
+											"quantity",
+											"timestamp",
+											"updatedBy",
+											"id"
+										],
+										"type": "object"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Inventory"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/inventory/update": {
+			"post": {
+				"operationId": "UpdateStock",
+				"responses": {
+					"200": {
+						"description": "Updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"quantity": {
+											"type": "number",
+											"format": "double"
+										},
+										"productId": {
+											"type": "string"
+										},
+										"updatedAt": {
+											"type": "string",
+											"format": "date-time"
+										},
+										"id": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"quantity",
+										"productId",
+										"updatedAt",
+										"id"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Inventory"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateStockParams"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/health": {
 			"get": {
 				"operationId": "GetHealth",
@@ -1987,31 +2262,6 @@
 							"application/json": {
 								"schema": {
 									"items": {},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Dashboard"
-				],
-				"security": [],
-				"parameters": []
-			}
-		},
-		"/dashboard/by-status": {
-			"get": {
-				"operationId": "GetOrdersByStatus",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/OrdersByStatus"
-									},
 									"type": "array"
 								}
 							}

@@ -6,6 +6,7 @@ export interface ProductCreationParams {
     name: string;
     categoryId: string;
     description?: string;
+    minDeliveryDays?: number;
     status?: EntityStatus;
 }
 
@@ -18,7 +19,10 @@ export class ProductService {
                     not: EntityStatus.DELETED
                 }
             },
-            include: { category: true },
+            include: {
+                category: true,
+                inventory: true
+            },
             orderBy: { createdAt: 'desc' }
         });
     }
@@ -26,24 +30,46 @@ export class ProductService {
     public async getById(id: string): Promise<Product | null> {
         return prisma.product.findUnique({
             where: { id },
-            include: { category: true }
+            include: {
+                category: true,
+                inventory: true
+            }
         });
     }
 
     public async create(params: ProductCreationParams): Promise<Product> {
-        return prisma.product.create({
+        const product = await prisma.product.create({
             data: {
-                ...params,
+                name: params.name,
+                categoryId: params.categoryId,
+                description: params.description,
+                minDeliveryDays: params.minDeliveryDays || 0,
                 status: params.status || EntityStatus.ACTIVE
             },
             include: { category: true }
         });
+
+        // Initialize inventory
+        await prisma.inventory.create({
+            data: {
+                productId: product.id,
+                quantity: 0
+            }
+        });
+
+        return product;
     }
 
     public async update(id: string, params: Partial<ProductCreationParams>): Promise<Product> {
         return prisma.product.update({
             where: { id },
-            data: params,
+            data: {
+                name: params.name,
+                categoryId: params.categoryId,
+                description: params.description,
+                minDeliveryDays: params.minDeliveryDays,
+                status: params.status
+            },
             include: { category: true }
         });
     }
