@@ -4,7 +4,7 @@ import { injectable } from "inversify";
 import bcrypt from "bcryptjs";
 
 export interface UserCreationParams {
-    email: string;
+    username: string;
     role: Role;
     password?: string;
 }
@@ -32,7 +32,7 @@ export class UserService {
         const passwordHash = await bcrypt.hash(params.password || "password123", 10);
         return prisma.user.create({
             data: {
-                email: params.email,
+                username: params.username,
                 passwordHash,
                 role: params.role
             }
@@ -52,10 +52,10 @@ export class UserService {
             const passwordHash = await bcrypt.hash("password", 10);
             await prisma.user.createMany({
                 data: [
-                    { email: "admin@kdm.com", passwordHash, role: Role.ADMIN },
-                    { email: "purchase@kdm.com", passwordHash, role: Role.PURCHASE_MANAGER },
-                    { email: "finance@kdm.com", passwordHash, role: Role.FINANCE },
-                    { email: "ops@kdm.com", passwordHash, role: Role.OPERATIONS },
+                    { username: "admin", passwordHash, role: Role.ADMIN },
+                    { username: "purchase_manager", passwordHash, role: Role.PURCHASE_MANAGER },
+                    { username: "finance", passwordHash, role: Role.FINANCE },
+                    { username: "ops", passwordHash, role: Role.OPERATIONS },
                 ]
             });
             console.log("Initial users seeded with hashed passwords.");

@@ -43,7 +43,7 @@
 					"passwordHash": {
 						"type": "string"
 					},
-					"email": {
+					"username": {
 						"type": "string"
 					},
 					"id": {
@@ -56,7 +56,7 @@
 					"status",
 					"role",
 					"passwordHash",
-					"email",
+					"username",
 					"id"
 				],
 				"type": "object"
@@ -70,7 +70,7 @@
 			},
 			"UserCreationParams": {
 				"properties": {
-					"email": {
+					"username": {
 						"type": "string"
 					},
 					"role": {
@@ -81,7 +81,7 @@
 					}
 				},
 				"required": [
-					"email",
+					"username",
 					"role"
 				],
 				"type": "object",
@@ -173,6 +173,9 @@
 					"address": {
 						"type": "string"
 					},
+					"email": {
+						"type": "string"
+					},
 					"phone": {
 						"type": "string"
 					},
@@ -193,22 +196,19 @@
 					"status": {
 						"$ref": "#/components/schemas/_36_Enums.SupplierStatus"
 					},
-					"email": {
-						"type": "string"
-					},
 					"id": {
 						"type": "string"
 					}
 				},
 				"required": [
 					"address",
+					"email",
 					"phone",
 					"contactPerson",
 					"companyName",
 					"updatedAt",
 					"createdAt",
 					"status",
-					"email",
 					"id"
 				],
 				"type": "object"
@@ -817,7 +817,7 @@
 					"id": {
 						"type": "string"
 					},
-					"email": {
+					"username": {
 						"type": "string"
 					},
 					"role": {
@@ -837,7 +837,7 @@
 				},
 				"required": [
 					"id",
-					"email",
+					"username",
 					"role",
 					"status",
 					"createdAt",
@@ -868,7 +868,7 @@
 			},
 			"LoginParams": {
 				"properties": {
-					"email": {
+					"username": {
 						"type": "string"
 					},
 					"password": {
@@ -876,14 +876,14 @@
 					}
 				},
 				"required": [
-					"email"
+					"username"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
 			"RegisterParams": {
 				"properties": {
-					"email": {
+					"username": {
 						"type": "string"
 					},
 					"password": {
@@ -894,7 +894,7 @@
 					}
 				},
 				"required": [
-					"email",
+					"username",
 					"role"
 				],
 				"type": "object",

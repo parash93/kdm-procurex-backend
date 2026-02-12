@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-procurex-key";
 
 export interface LoginParams {
-    email: string;
+    username: string;
     password?: string;
 }
 
@@ -17,7 +17,7 @@ export interface AuthResponse {
 }
 
 export interface RegisterParams {
-    email: string;
+    username: string;
     password?: string;
     role: Role;
 }
@@ -26,7 +26,7 @@ export interface RegisterParams {
 export class AuthService {
     public async login(params: LoginParams): Promise<AuthResponse> {
         const user = await prisma.user.findUnique({
-            where: { email: params.email }
+            where: { username: params.username }
         });
 
         if (!user || user.status === UserStatus.DELETED) {
@@ -48,7 +48,7 @@ export class AuthService {
         }
 
         const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
+            { id: user.id, username: user.username, role: user.role },
             JWT_SECRET,
             { expiresIn: '8h' }
         );
@@ -62,10 +62,9 @@ export class AuthService {
 
     public async register(params: RegisterParams): Promise<User> {
         const passwordHash = await bcrypt.hash(params.password || "password123", 10);
-
         return prisma.user.create({
             data: {
-                email: params.email,
+                username: params.username,
                 passwordHash,
                 role: params.role
             }

@@ -49,7 +49,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_UserPayload_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"status":{"ref":"_36_Enums.UserStatus","required":true},"role":{"ref":"_36_Enums.Role","required":true},"passwordHash":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"status":{"ref":"_36_Enums.UserStatus","required":true},"role":{"ref":"_36_Enums.Role","required":true},"passwordHash":{"dataType":"string","required":true},"username":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "User": {
@@ -65,7 +65,7 @@ const models: TsoaRoute.Models = {
     "UserCreationParams": {
         "dataType": "refObject",
         "properties": {
-            "email": {"dataType":"string","required":true},
+            "username": {"dataType":"string","required":true},
             "role": {"ref":"Role","required":true},
             "password": {"dataType":"string"},
         },
@@ -102,7 +102,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_SupplierPayload_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"address":{"dataType":"string","required":true},"phone":{"dataType":"string","required":true},"contactPerson":{"dataType":"string","required":true},"companyName":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"status":{"ref":"_36_Enums.SupplierStatus","required":true},"email":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"address":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"phone":{"dataType":"string","required":true},"contactPerson":{"dataType":"string","required":true},"companyName":{"dataType":"string","required":true},"updatedAt":{"dataType":"datetime","required":true},"createdAt":{"dataType":"datetime","required":true},"status":{"ref":"_36_Enums.SupplierStatus","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Supplier": {
@@ -295,7 +295,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_User.Exclude_keyofUser.passwordHash__": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.Role","required":true},"status":{"ref":"_36_Enums.UserStatus","required":true},"createdAt":{"dataType":"datetime","required":true},"updatedAt":{"dataType":"datetime","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true},"username":{"dataType":"string","required":true},"role":{"ref":"_36_Enums.Role","required":true},"status":{"ref":"_36_Enums.UserStatus","required":true},"createdAt":{"dataType":"datetime","required":true},"updatedAt":{"dataType":"datetime","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Omit_User.passwordHash_": {
@@ -315,7 +315,7 @@ const models: TsoaRoute.Models = {
     "LoginParams": {
         "dataType": "refObject",
         "properties": {
-            "email": {"dataType":"string","required":true},
+            "username": {"dataType":"string","required":true},
             "password": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -324,7 +324,7 @@ const models: TsoaRoute.Models = {
     "RegisterParams": {
         "dataType": "refObject",
         "properties": {
-            "email": {"dataType":"string","required":true},
+            "username": {"dataType":"string","required":true},
             "password": {"dataType":"string"},
             "role": {"ref":"Role","required":true},
         },
