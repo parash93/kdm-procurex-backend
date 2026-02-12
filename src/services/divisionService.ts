@@ -12,6 +12,11 @@ export interface DivisionCreationParams {
 export class DivisionService {
     public async getAll(): Promise<Division[]> {
         return prisma.division.findMany({
+            where: {
+                status: {
+                    not: EntityStatus.DELETED
+                }
+            },
             orderBy: { createdAt: 'desc' }
         });
     }
@@ -39,16 +44,9 @@ export class DivisionService {
     }
 
     public async delete(id: string): Promise<Division> {
-        const usageCount = await prisma.purchaseOrder.count({
-            where: { divisionId: id }
-        });
-
-        if (usageCount > 0) {
-            throw new Error(`Cannot delete division as it is linked to ${usageCount} purchase orders.`);
-        }
-
-        return prisma.division.delete({
-            where: { id }
+        return prisma.division.update({
+            where: { id },
+            data: { status: EntityStatus.DELETED }
         });
     }
 }

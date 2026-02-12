@@ -11,6 +11,11 @@ export interface ProductCategoryCreationParams {
 export class ProductCategoryService {
     public async getAll(): Promise<ProductCategory[]> {
         return prisma.productCategory.findMany({
+            where: {
+                status: {
+                    not: EntityStatus.DELETED
+                }
+            },
             orderBy: { createdAt: 'desc' }
         });
     }
@@ -38,16 +43,9 @@ export class ProductCategoryService {
     }
 
     public async delete(id: string): Promise<ProductCategory> {
-        const usageCount = await prisma.product.count({
-            where: { categoryId: id }
-        });
-
-        if (usageCount > 0) {
-            throw new Error(`Cannot delete category as it is linked to ${usageCount} products.`);
-        }
-
-        return prisma.productCategory.delete({
-            where: { id }
+        return prisma.productCategory.update({
+            where: { id },
+            data: { status: EntityStatus.DELETED }
         });
     }
 }

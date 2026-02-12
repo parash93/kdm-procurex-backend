@@ -61,6 +61,11 @@ export class PurchaseOrderService {
 
     public async getAll(): Promise<PurchaseOrder[]> {
         return prisma.purchaseOrder.findMany({
+            where: {
+                status: {
+                    not: POStatus.DELETED
+                }
+            },
             include: {
                 supplier: true,
                 division: true,
@@ -150,12 +155,9 @@ export class PurchaseOrderService {
     }
 
     public async delete(id: string): Promise<void> {
-        await prisma.$transaction(async (tx) => {
-            // Delete child items first (Prisma relationMode = "prisma" might require this manually if not configured for cascade)
-            await tx.purchaseOrderItem.deleteMany({ where: { poId: id } });
-            await tx.stageUpdate.deleteMany({ where: { poId: id } });
-            await tx.approval.deleteMany({ where: { poId: id } });
-            await tx.purchaseOrder.delete({ where: { id } });
+        await prisma.purchaseOrder.update({
+            where: { id },
+            data: { status: POStatus.DELETED }
         });
     }
 }

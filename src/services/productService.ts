@@ -13,6 +13,11 @@ export interface ProductCreationParams {
 export class ProductService {
     public async getAll(): Promise<Product[]> {
         return prisma.product.findMany({
+            where: {
+                status: {
+                    not: EntityStatus.DELETED
+                }
+            },
             include: { category: true },
             orderBy: { createdAt: 'desc' }
         });
@@ -44,16 +49,10 @@ export class ProductService {
     }
 
     public async delete(id: string): Promise<Product> {
-        const usageCount = await prisma.purchaseOrderItem.count({
-            where: { productId: id }
-        });
-
-        if (usageCount > 0) {
-            throw new Error(`Cannot delete product as it is linked to ${usageCount} order items.`);
-        }
-
-        return prisma.product.delete({
-            where: { id }
+        return prisma.product.update({
+            where: { id },
+            data: { status: EntityStatus.DELETED },
+            include: { category: true }
         });
     }
 }

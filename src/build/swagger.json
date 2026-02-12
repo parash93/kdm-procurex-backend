@@ -16,6 +16,14 @@
 					"FINANCE"
 				]
 			},
+			"_36_Enums.UserStatus": {
+				"type": "string",
+				"enum": [
+					"ACTIVE",
+					"INACTIVE",
+					"DELETED"
+				]
+			},
 			"DefaultSelection_Prisma._36_UserPayload_": {
 				"properties": {
 					"updatedAt": {
@@ -25,6 +33,9 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.UserStatus"
 					},
 					"role": {
 						"$ref": "#/components/schemas/_36_Enums.Role"
@@ -42,6 +53,7 @@
 				"required": [
 					"updatedAt",
 					"createdAt",
+					"status",
 					"role",
 					"passwordHash",
 					"email",
@@ -151,15 +163,13 @@
 				"type": "string",
 				"enum": [
 					"ACTIVE",
+					"DELETED",
 					"SUSPENDED",
 					"BLACKLISTED"
 				]
 			},
 			"DefaultSelection_Prisma._36_SupplierPayload_": {
 				"properties": {
-					"status": {
-						"$ref": "#/components/schemas/_36_Enums.SupplierStatus"
-					},
 					"address": {
 						"type": "string"
 					},
@@ -180,6 +190,9 @@
 						"type": "string",
 						"format": "date-time"
 					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.SupplierStatus"
+					},
 					"email": {
 						"type": "string"
 					},
@@ -188,13 +201,13 @@
 					}
 				},
 				"required": [
-					"status",
 					"address",
 					"phone",
 					"contactPerson",
 					"companyName",
 					"updatedAt",
 					"createdAt",
+					"status",
 					"email",
 					"id"
 				],
@@ -274,6 +287,7 @@
 				"type": "string",
 				"enum": [
 					"ACTIVE",
+					"DELETED",
 					"SUSPENDED",
 					"BLACKLISTED"
 				]
@@ -286,9 +300,6 @@
 					"categoryId": {
 						"type": "string"
 					},
-					"status": {
-						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
-					},
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
@@ -296,6 +307,9 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
 					},
 					"id": {
 						"type": "string"
@@ -307,9 +321,9 @@
 				"required": [
 					"description",
 					"categoryId",
-					"status",
 					"updatedAt",
 					"createdAt",
+					"status",
 					"id",
 					"name"
 				],
@@ -364,9 +378,6 @@
 			},
 			"DefaultSelection_Prisma._36_ProductCategoryPayload_": {
 				"properties": {
-					"status": {
-						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
-					},
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
@@ -374,6 +385,9 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
 					},
 					"id": {
 						"type": "string"
@@ -383,9 +397,9 @@
 					}
 				},
 				"required": [
-					"status",
 					"updatedAt",
 					"createdAt",
+					"status",
 					"id",
 					"name"
 				],
@@ -425,6 +439,7 @@
 			"_36_Enums.POStatus": {
 				"type": "string",
 				"enum": [
+					"DELETED",
 					"DRAFT",
 					"PENDING_APPROVAL",
 					"APPROVED",
@@ -469,9 +484,6 @@
 					"paymentTerms": {
 						"type": "string"
 					},
-					"status": {
-						"$ref": "#/components/schemas/_36_Enums.POStatus"
-					},
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
@@ -479,6 +491,9 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.POStatus"
 					},
 					"id": {
 						"type": "string"
@@ -493,9 +508,9 @@
 					"supplierId",
 					"poNumber",
 					"paymentTerms",
-					"status",
 					"updatedAt",
 					"createdAt",
+					"status",
 					"id"
 				],
 				"type": "object"
@@ -639,9 +654,6 @@
 			},
 			"DefaultSelection_Prisma._36_DivisionPayload_": {
 				"properties": {
-					"status": {
-						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
-					},
 					"contactPerson": {
 						"type": "string"
 					},
@@ -653,6 +665,9 @@
 						"type": "string",
 						"format": "date-time"
 					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
+					},
 					"id": {
 						"type": "string"
 					},
@@ -661,10 +676,10 @@
 					}
 				},
 				"required": [
-					"status",
 					"contactPerson",
 					"updatedAt",
 					"createdAt",
+					"status",
 					"id",
 					"name"
 				],
@@ -808,6 +823,9 @@
 					"role": {
 						"$ref": "#/components/schemas/_36_Enums.Role"
 					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.UserStatus"
+					},
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
@@ -821,6 +839,7 @@
 					"id",
 					"email",
 					"role",
+					"status",
 					"createdAt",
 					"updatedAt"
 				],

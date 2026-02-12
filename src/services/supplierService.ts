@@ -20,7 +20,13 @@ export class SupplierService {
     }
 
     public async getAll(): Promise<Supplier[]> {
-        return prisma.supplier.findMany();
+        return prisma.supplier.findMany({
+            where: {
+                status: {
+                    not: SupplierStatus.DELETED
+                }
+            }
+        });
     }
 
     public async create(params: SupplierCreationParams): Promise<Supplier> {
@@ -40,16 +46,9 @@ export class SupplierService {
     }
 
     public async delete(id: string): Promise<void> {
-        const usageCount = await prisma.purchaseOrder.count({
-            where: { supplierId: id }
-        });
-
-        if (usageCount > 0) {
-            throw new Error(`Cannot delete supplier as they are linked to ${usageCount} purchase orders.`);
-        }
-
-        await prisma.supplier.delete({
+        await prisma.supplier.update({
             where: { id },
+            data: { status: SupplierStatus.DELETED }
         });
     }
 }

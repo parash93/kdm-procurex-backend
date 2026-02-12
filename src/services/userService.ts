@@ -1,4 +1,4 @@
-import { User, Role } from "@prisma/client";
+import { User, Role, UserStatus } from "@prisma/client";
 import { prisma } from "../repositories/prismaContext";
 import { injectable } from "inversify";
 import bcrypt from "bcryptjs";
@@ -13,6 +13,11 @@ export interface UserCreationParams {
 export class UserService {
     public async getAll(): Promise<User[]> {
         return prisma.user.findMany({
+            where: {
+                status: {
+                    not: UserStatus.DELETED
+                }
+            },
             orderBy: { createdAt: 'desc' }
         });
     }
@@ -35,8 +40,9 @@ export class UserService {
     }
 
     public async delete(id: string): Promise<User> {
-        return prisma.user.delete({
-            where: { id }
+        return prisma.user.update({
+            where: { id },
+            data: { status: UserStatus.DELETED }
         });
     }
 

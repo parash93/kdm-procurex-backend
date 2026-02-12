@@ -13,10 +13,17 @@ model User {
   email        String     @unique
   passwordHash String
   role         Role       @default(OPERATIONS)
+  status       UserStatus @default(ACTIVE)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   approvals    Approval[]
   stageUpdates StageUpdate[]
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  DELETED
 }
 
 model Division {
@@ -147,12 +154,14 @@ enum EntityStatus {
   ACTIVE
   SUSPENDED
   BLACKLISTED
+  DELETED
 }
 
 enum SupplierStatus {
   ACTIVE
   SUSPENDED
   BLACKLISTED
+  DELETED
 }
 
 enum POStatus {
@@ -170,4 +179,5 @@ enum POStatus {
   DELIVERED
   CLOSED
   CANCELLED
+  DELETED
 }

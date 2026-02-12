@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { prisma } from "../repositories/prismaContext";
-import { User, Role } from "@prisma/client";
+import { User, Role, UserStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -29,8 +29,12 @@ export class AuthService {
             where: { email: params.email }
         });
 
-        if (!user) {
+        if (!user || user.status === UserStatus.DELETED) {
             throw new Error("Invalid email or password");
+        }
+
+        if (user.status === UserStatus.INACTIVE) {
+            throw new Error("Account is inactive. Please contact administrator.");
         }
 
         // For initial seeded users, passwordHash might be null or "password" (plaintext)
