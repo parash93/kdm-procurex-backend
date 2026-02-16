@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id               String             @id @default(uuid())
+  id               Int                @id @default(autoincrement())
   username         String             @unique
   passwordHash     String
   role             Role               @default(OPERATIONS)
@@ -28,7 +28,7 @@ enum UserStatus {
 }
 
 model Division {
-  id             String          @id @default(uuid())
+  id             Int             @id @default(autoincrement())
   name           String
   contactPerson  String?
   status         EntityStatus    @default(ACTIVE)
@@ -38,18 +38,18 @@ model Division {
 }
 
 model ProductCategory {
-  id        String       @id @default(uuid())
+  id        Int            @id @default(autoincrement())
   name      String
-  status    EntityStatus @default(ACTIVE)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  status    EntityStatus   @default(ACTIVE)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
   products  Product[]
 }
 
 model Product {
-  id                 String              @id @default(uuid())
+  id                 Int                 @id @default(autoincrement())
   name               String
-  categoryId         String
+  categoryId         Int
   description        String?
   minDeliveryDays    Int                 @default(0)
   status             EntityStatus        @default(ACTIVE)
@@ -63,7 +63,7 @@ model Product {
 }
 
 model Supplier {
-  id             String          @id @default(uuid())
+  id             Int             @id @default(autoincrement())
   companyName    String
   contactPerson  String?
   phone          String?
@@ -76,15 +76,15 @@ model Supplier {
 }
 
 model PurchaseOrder {
-  id                   String              @id @default(uuid())
+  id                   Int                 @id @default(autoincrement())
   poNumber             String              @unique
-  supplierId           String
+  supplierId           Int
   poDate               DateTime            @default(now())
   status               POStatus            @default(DRAFT)
   remarks              String?
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
-  divisionId           String?
+  divisionId           Int?
   supplier             Supplier            @relation(fields: [supplierId], references: [id])
   division             Division?           @relation(fields: [divisionId], references: [id])
   items                PurchaseOrderItem[]
@@ -96,26 +96,26 @@ model PurchaseOrder {
 }
 
 model PurchaseOrderItem {
-  id                   String        @id @default(uuid())
-  poId                 String
+  id                   Int            @id @default(autoincrement())
+  poId                 Int
   productName          String?
   sku                  String?
   quantity             Int
   unitPrice            Decimal
   totalPrice           Decimal
   remarks              String?
-  productId            String?
+  productId            Int?
   expectedDeliveryDate DateTime?
-  purchaseOrder        PurchaseOrder @relation(fields: [poId], references: [id])
-  product              Product?      @relation(fields: [productId], references: [id])
+  purchaseOrder        PurchaseOrder  @relation(fields: [poId], references: [id])
+  product              Product?       @relation(fields: [productId], references: [id])
 
   @@index([poId])
   @@index([productId])
 }
 
 model Inventory {
-  id        String             @id @default(uuid())
-  productId String             @unique
+  id        Int                @id @default(autoincrement())
+  productId Int                @unique
   quantity  Int                @default(0)
   updatedAt DateTime           @updatedAt
   product   Product            @relation(fields: [productId], references: [id])
@@ -123,12 +123,12 @@ model Inventory {
 }
 
 model InventoryHistory {
-  id            String    @id @default(uuid())
-  inventoryId   String
+  id            Int       @id @default(autoincrement())
+  inventoryId   Int
   type          String    // ADD / SUBTRACT
   quantity      Int
   reason        String?   // e.g., "Manually added", "PO Delivered: PO-123"
-  updatedBy     String?   // user ID
+  updatedBy     Int?      // user ID
   timestamp     DateTime  @default(now())
   inventory     Inventory @relation(fields: [inventoryId], references: [id])
   updatedByUser User?     @relation("InventoryHistoryUpdatedBy", fields: [updatedBy], references: [id])
@@ -138,13 +138,13 @@ model InventoryHistory {
 }
 
 model StageUpdate {
-  id            String        @id @default(uuid())
-  poId          String
+  id            Int           @id @default(autoincrement())
+  poId          Int
   stage         String
   notes         String?
   attachmentUrl String?
   photoUrl      String?
-  updatedBy     String?
+  updatedBy     Int?
   timestamp     DateTime      @default(now())
   purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id])
   updatedByUser User?         @relation(fields: [updatedBy], references: [id])
@@ -154,9 +154,9 @@ model StageUpdate {
 }
 
 model Approval {
-  id            String        @id @default(uuid())
-  poId          String
-  approverId    String
+  id            Int           @id @default(autoincrement())
+  poId          Int
+  approverId    Int
   level         Int
   decision      String
   remarks       String?
