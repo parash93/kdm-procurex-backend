@@ -30,7 +30,7 @@ export class DivisionController extends Controller {
     }
 
     @Get("{id}")
-    public async getDivision(@Path() id: string): Promise<Division | null> {
+    public async getDivision(@Path() id: number): Promise<Division | null> {
         return this.divisionService.getById(id);
     }
 
@@ -46,7 +46,7 @@ export class DivisionController extends Controller {
 
     @Put("{id}")
     public async updateDivision(
-        @Path() id: string,
+        @Path() id: number,
         @Body() requestBody: Partial<DivisionCreationParams>
     ): Promise<Division> {
         return this.divisionService.update(id, requestBody);
@@ -54,7 +54,7 @@ export class DivisionController extends Controller {
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteDivision(@Path() id: string): Promise<void> {
+    public async deleteDivision(@Path() id: number): Promise<void> {
         this.setStatus(204);
         await this.divisionService.delete(id);
     }

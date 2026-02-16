@@ -34,7 +34,7 @@ export class AuthController extends Controller {
 
     @Delete("users/{id}")
     @Security("jwt", ["ADMIN"])
-    public async deleteUser(@Path() id: string): Promise<any> {
+    public async deleteUser(@Path() id: number): Promise<any> {
         return this.userService.delete(id);
     }
 }

@@ -21,7 +21,7 @@ export class DivisionService {
         });
     }
 
-    public async getById(id: string): Promise<Division | null> {
+    public async getById(id: number): Promise<Division | null> {
         return prisma.division.findUnique({
             where: { id }
         });
@@ -36,14 +36,14 @@ export class DivisionService {
         });
     }
 
-    public async update(id: string, params: Partial<DivisionCreationParams>): Promise<Division> {
+    public async update(id: number, params: Partial<DivisionCreationParams>): Promise<Division> {
         return prisma.division.update({
             where: { id },
             data: params
         });
     }
 
-    public async delete(id: string): Promise<Division> {
+    public async delete(id: number): Promise<Division> {
         return prisma.division.update({
             where: { id },
             data: { status: EntityStatus.DELETED }

@@ -25,7 +25,7 @@ export class SupplierController extends Controller {
     }
 
     @Get("{id}")
-    public async getSupplier(@Path() id: string): Promise<Supplier | null> {
+    public async getSupplier(@Path() id: number): Promise<Supplier | null> {
         return this.supplierService.get(id);
     }
 
@@ -45,7 +45,7 @@ export class SupplierController extends Controller {
 
     @Put("{id}")
     public async updateSupplier(
-        @Path() id: string,
+        @Path() id: number,
         @Body() requestBody: Partial<SupplierCreationParams>
     ): Promise<Supplier> {
         return this.supplierService.update(id, requestBody);
@@ -53,7 +53,7 @@ export class SupplierController extends Controller {
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteSupplier(@Path() id: string): Promise<void> {
+    public async deleteSupplier(@Path() id: number): Promise<void> {
         await this.supplierService.delete(id);
         this.setStatus(204);
     }

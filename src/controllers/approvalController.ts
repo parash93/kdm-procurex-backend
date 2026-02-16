@@ -23,7 +23,7 @@ export class ApprovalController extends Controller {
     }
 
     @Get("history/{poId}")
-    public async getHistory(@Path() poId: string): Promise<Approval[]> {
+    public async getHistory(@Path() poId: number): Promise<Approval[]> {
         return this.approvalService.getHistory(poId);
     }
 

@@ -4,7 +4,7 @@ import { injectable } from "inversify";
 
 export interface ProductCreationParams {
     name: string;
-    categoryId: string;
+    categoryId: number;
     description?: string;
     minDeliveryDays?: number;
     status?: EntityStatus;
@@ -27,7 +27,7 @@ export class ProductService {
         });
     }
 
-    public async getById(id: string): Promise<Product | null> {
+    public async getById(id: number): Promise<Product | null> {
         return prisma.product.findUnique({
             where: { id },
             include: {
@@ -60,7 +60,7 @@ export class ProductService {
         return product;
     }
 
-    public async update(id: string, params: Partial<ProductCreationParams>): Promise<Product> {
+    public async update(id: number, params: Partial<ProductCreationParams>): Promise<Product> {
         return prisma.product.update({
             where: { id },
             data: {
@@ -74,7 +74,7 @@ export class ProductService {
         });
     }
 
-    public async delete(id: string): Promise<Product> {
+    public async delete(id: number): Promise<Product> {
         return prisma.product.update({
             where: { id },
             data: { status: EntityStatus.DELETED },

@@ -30,7 +30,7 @@ export class ProductCategoryController extends Controller {
     }
 
     @Get("{id}")
-    public async getCategory(@Path() id: string): Promise<ProductCategory | null> {
+    public async getCategory(@Path() id: number): Promise<ProductCategory | null> {
         return this.categoryService.getById(id);
     }
 
@@ -45,7 +45,7 @@ export class ProductCategoryController extends Controller {
 
     @Put("{id}")
     public async updateCategory(
-        @Path() id: string,
+        @Path() id: number,
         @Body() requestBody: Partial<ProductCategoryCreationParams>
     ): Promise<ProductCategory> {
         return this.categoryService.update(id, requestBody);
@@ -53,7 +53,7 @@ export class ProductCategoryController extends Controller {
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteCategory(@Path() id: string): Promise<void> {
+    public async deleteCategory(@Path() id: number): Promise<void> {
         this.setStatus(204);
         await this.categoryService.delete(id);
     }

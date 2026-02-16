@@ -15,7 +15,7 @@ export interface SupplierCreationParams {
 
 @injectable()
 export class SupplierService {
-    public async get(id: string): Promise<Supplier | null> {
+    public async get(id: number): Promise<Supplier | null> {
         return prisma.supplier.findUnique({ where: { id } });
     }
 
@@ -38,14 +38,14 @@ export class SupplierService {
         });
     }
 
-    public async update(id: string, params: Partial<SupplierCreationParams> & { status?: SupplierStatus }): Promise<Supplier> {
+    public async update(id: number, params: Partial<SupplierCreationParams> & { status?: SupplierStatus }): Promise<Supplier> {
         return prisma.supplier.update({
             where: { id },
             data: params,
         });
     }
 
-    public async delete(id: string): Promise<void> {
+    public async delete(id: number): Promise<void> {
         await prisma.supplier.update({
             where: { id },
             data: { status: SupplierStatus.DELETED }

@@ -3,8 +3,8 @@ import { prisma } from "../repositories/prismaContext";
 import { injectable } from "inversify";
 
 export interface ApprovalParams {
-    poId: string;
-    approverId: string;
+    poId: number;
+    approverId: number;
     level: number;
     decision: "APPROVED" | "REJECTED";
     remarks?: string;
@@ -70,7 +70,7 @@ export class ApprovalService {
         });
     }
 
-    public async getHistory(poId: string): Promise<Approval[]> {
+    public async getHistory(poId: number): Promise<Approval[]> {
         return prisma.approval.findMany({
             where: { poId },
             include: {

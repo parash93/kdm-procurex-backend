@@ -26,7 +26,7 @@ export class TrackingController extends Controller {
     }
 
     @Get("{poId}")
-    public async getHistory(@Path() poId: string): Promise<StageUpdate[]> {
+    public async getHistory(@Path() poId: number): Promise<StageUpdate[]> {
         return this.trackingService.getHistory(poId);
     }
 

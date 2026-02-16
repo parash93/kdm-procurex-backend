@@ -22,7 +22,7 @@ export class UserService {
         });
     }
 
-    public async getById(id: string): Promise<User | null> {
+    public async getById(id: number): Promise<User | null> {
         return prisma.user.findUnique({
             where: { id }
         });
@@ -39,7 +39,7 @@ export class UserService {
         });
     }
 
-    public async delete(id: string): Promise<User> {
+    public async delete(id: number): Promise<User> {
         return prisma.user.update({
             where: { id },
             data: { status: UserStatus.DELETED }

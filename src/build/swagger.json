@@ -45,7 +45,8 @@
 						"type": "string"
 					},
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -92,7 +93,8 @@
 						"format": "date-time"
 					},
 					"updatedBy": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"photoUrl": {
 						"type": "string"
@@ -107,10 +109,12 @@
 						"type": "string"
 					},
 					"poId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -132,7 +136,8 @@
 			"StageUpdateParams": {
 				"properties": {
 					"poId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"stage": {
 						"type": "string"
@@ -144,7 +149,8 @@
 						"type": "string"
 					},
 					"updatedBy": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"updatePOStatus": {
 						"type": "boolean"
@@ -195,7 +201,8 @@
 						"$ref": "#/components/schemas/_36_Enums.SupplierStatus"
 					},
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -300,7 +307,8 @@
 						"type": "string"
 					},
 					"categoryId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"updatedAt": {
 						"type": "string",
@@ -314,7 +322,8 @@
 						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
 					},
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"name": {
 						"type": "string"
@@ -345,7 +354,8 @@
 						"type": "string"
 					},
 					"categoryId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"description": {
 						"type": "string"
@@ -371,7 +381,8 @@
 						"type": "string"
 					},
 					"categoryId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"description": {
 						"type": "string"
@@ -401,7 +412,8 @@
 						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
 					},
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"name": {
 						"type": "string"
@@ -471,7 +483,8 @@
 			"DefaultSelection_Prisma._36_PurchaseOrderPayload_": {
 				"properties": {
 					"divisionId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"remarks": {
 						"type": "string"
@@ -481,7 +494,8 @@
 						"format": "date-time"
 					},
 					"supplierId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"poNumber": {
 						"type": "string"
@@ -498,7 +512,8 @@
 						"$ref": "#/components/schemas/_36_Enums.POStatus"
 					},
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -521,10 +536,12 @@
 			"CreatePOParams": {
 				"properties": {
 					"supplierId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"divisionId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"remarks": {
 						"type": "string"
@@ -558,7 +575,8 @@
 									"type": "string"
 								},
 								"productId": {
-									"type": "string"
+									"type": "number",
+									"format": "double"
 								}
 							},
 							"required": [
@@ -581,10 +599,12 @@
 			"Partial_CreatePOParams-and-_status-POStatus__": {
 				"properties": {
 					"supplierId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"divisionId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"remarks": {
 						"type": "string"
@@ -618,7 +638,8 @@
 									"type": "string"
 								},
 								"productId": {
-									"type": "string"
+									"type": "number",
+									"format": "double"
 								}
 							},
 							"required": [
@@ -640,7 +661,8 @@
 			"UpdateStockParams": {
 				"properties": {
 					"productId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"quantity": {
 						"type": "number",
@@ -657,7 +679,8 @@
 						"type": "string"
 					},
 					"updatedBy": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -687,7 +710,8 @@
 						"$ref": "#/components/schemas/_36_Enums.EntityStatus"
 					},
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"name": {
 						"type": "string"
@@ -826,7 +850,8 @@
 			"Pick_User.Exclude_keyofUser.passwordHash__": {
 				"properties": {
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"username": {
 						"type": "string"
@@ -917,7 +942,8 @@
 						"type": "string"
 					},
 					"approverId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"level": {
 						"type": "number",
@@ -931,10 +957,12 @@
 						"format": "date-time"
 					},
 					"poId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"id": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -955,10 +983,12 @@
 			"ApprovalParams": {
 				"properties": {
 					"poId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"approverId": {
-						"type": "string"
+						"type": "number",
+						"format": "double"
 					},
 					"level": {
 						"type": "number",
@@ -1100,7 +1130,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1134,7 +1165,8 @@
 						"name": "poId",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1206,7 +1238,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1235,7 +1268,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				],
@@ -1267,7 +1301,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1413,7 +1448,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1442,7 +1478,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				],
@@ -1474,7 +1511,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1565,7 +1603,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1594,7 +1633,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				],
@@ -1626,7 +1666,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1717,7 +1758,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1746,7 +1788,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				],
@@ -1778,7 +1821,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -1815,7 +1859,8 @@
 																				"$ref": "#/components/schemas/_36_Enums.EntityStatus"
 																			},
 																			"id": {
-																				"type": "string"
+																				"type": "number",
+																				"format": "double"
 																			},
 																			"name": {
 																				"type": "string"
@@ -1846,7 +1891,8 @@
 																		"type": "string"
 																	},
 																	"categoryId": {
-																		"type": "string"
+																		"type": "number",
+																		"format": "double"
 																	},
 																	"updatedAt": {
 																		"type": "string",
@@ -1860,7 +1906,8 @@
 																		"$ref": "#/components/schemas/_36_Enums.EntityStatus"
 																	},
 																	"id": {
-																		"type": "string"
+																		"type": "number",
+																		"format": "double"
 																	},
 																	"name": {
 																		"type": "string"
@@ -1893,14 +1940,16 @@
 														"format": "double"
 													},
 													"productId": {
-														"type": "string"
+														"type": "number",
+														"format": "double"
 													},
 													"updatedAt": {
 														"type": "string",
 														"format": "date-time"
 													},
 													"id": {
-														"type": "string"
+														"type": "number",
+														"format": "double"
 													}
 												},
 												"required": [
@@ -1944,7 +1993,8 @@
 												"type": "string"
 											},
 											"inventoryId": {
-												"type": "string"
+												"type": "number",
+												"format": "double"
 											},
 											"quantity": {
 												"type": "number",
@@ -1955,10 +2005,12 @@
 												"format": "date-time"
 											},
 											"updatedBy": {
-												"type": "string"
+												"type": "number",
+												"format": "double"
 											},
 											"id": {
-												"type": "string"
+												"type": "number",
+												"format": "double"
 											}
 										},
 										"required": [
@@ -1988,7 +2040,8 @@
 						"name": "productId",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -2009,14 +2062,16 @@
 											"format": "double"
 										},
 										"productId": {
-											"type": "string"
+											"type": "number",
+											"format": "double"
 										},
 										"updatedAt": {
 											"type": "string",
 											"format": "date-time"
 										},
 										"id": {
-											"type": "string"
+											"type": "number",
+											"format": "double"
 										}
 									},
 									"required": [
@@ -2163,7 +2218,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -2192,7 +2248,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				],
@@ -2224,7 +2281,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -2430,7 +2488,8 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -2464,7 +2523,8 @@
 						"name": "poId",
 						"required": true,
 						"schema": {
-							"type": "string"
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]

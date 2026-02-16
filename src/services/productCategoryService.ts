@@ -20,7 +20,7 @@ export class ProductCategoryService {
         });
     }
 
-    public async getById(id: string): Promise<ProductCategory | null> {
+    public async getById(id: number): Promise<ProductCategory | null> {
         return prisma.productCategory.findUnique({
             where: { id }
         });
@@ -35,14 +35,14 @@ export class ProductCategoryService {
         });
     }
 
-    public async update(id: string, params: Partial<ProductCategoryCreationParams>): Promise<ProductCategory> {
+    public async update(id: number, params: Partial<ProductCategoryCreationParams>): Promise<ProductCategory> {
         return prisma.productCategory.update({
             where: { id },
             data: params
         });
     }
 
-    public async delete(id: string): Promise<ProductCategory> {
+    public async delete(id: number): Promise<ProductCategory> {
         return prisma.productCategory.update({
             where: { id },
             data: { status: EntityStatus.DELETED }

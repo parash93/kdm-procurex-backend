@@ -3,11 +3,11 @@ import { prisma } from "../repositories/prismaContext";
 import { injectable } from "inversify";
 
 export interface StageUpdateParams {
-    poId: string;
+    poId: number;
     stage: string;
     notes?: string;
     photoUrl?: string;
-    updatedBy?: string;
+    updatedBy?: number;
     updatePOStatus?: boolean;
 }
 
@@ -55,7 +55,7 @@ export class TrackingService {
                                             type: 'SUBTRACT',
                                             quantity: item.quantity,
                                             reason: `PO Delivered: ${currentPO.poNumber}`,
-                                            updatedBy: params.updatedBy || 'system'
+                                            updatedBy: params.updatedBy || 0
                                         }
                                     });
                                 }
@@ -81,7 +81,7 @@ export class TrackingService {
                                             type: 'ADD',
                                             quantity: item.quantity,
                                             reason: `PO Returned: ${currentPO.poNumber}`,
-                                            updatedBy: params.updatedBy || 'system'
+                                            updatedBy: params.updatedBy || 0
                                         }
                                     });
                                 }
@@ -103,7 +103,7 @@ export class TrackingService {
         });
     }
 
-    public async getHistory(poId: string): Promise<StageUpdate[]> {
+    public async getHistory(poId: number): Promise<StageUpdate[]> {
         return prisma.stageUpdate.findMany({
             where: { poId },
             include: {

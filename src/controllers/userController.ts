@@ -46,7 +46,7 @@ export class UserController extends Controller {
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteUser(@Path() id: string): Promise<void> {
+    public async deleteUser(@Path() id: number): Promise<void> {
         this.setStatus(204);
         await this.userService.delete(id);
     }

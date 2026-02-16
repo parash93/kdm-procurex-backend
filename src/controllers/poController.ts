@@ -30,7 +30,7 @@ export class PurchaseOrderController extends Controller {
     }
 
     @Get("{id}")
-    public async getOrder(@Path() id: string): Promise<PurchaseOrder | null> {
+    public async getOrder(@Path() id: number): Promise<PurchaseOrder | null> {
         return this.poService.getById(id);
     }
 
@@ -45,7 +45,7 @@ export class PurchaseOrderController extends Controller {
 
     @Put("{id}")
     public async updateOrder(
-        @Path() id: string,
+        @Path() id: number,
         @Body() requestBody: Partial<CreatePOParams & { status: POStatus }>
     ): Promise<PurchaseOrder> {
         return this.poService.update(id, requestBody);
@@ -53,7 +53,7 @@ export class PurchaseOrderController extends Controller {
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteOrder(@Path() id: string): Promise<void> {
+    public async deleteOrder(@Path() id: number): Promise<void> {
         await this.poService.delete(id);
         this.setStatus(204);
     }

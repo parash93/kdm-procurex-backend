@@ -30,7 +30,7 @@ export class ProductController extends Controller {
     }
 
     @Get("{id}")
-    public async getProduct(@Path() id: string): Promise<Product | null> {
+    public async getProduct(@Path() id: number): Promise<Product | null> {
         return this.productService.getById(id);
     }
 
@@ -45,7 +45,7 @@ export class ProductController extends Controller {
 
     @Put("{id}")
     public async updateProduct(
-        @Path() id: string,
+        @Path() id: number,
         @Body() requestBody: Partial<ProductCreationParams>
     ): Promise<Product> {
         return this.productService.update(id, requestBody);
@@ -53,7 +53,7 @@ export class ProductController extends Controller {
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteProduct(@Path() id: string): Promise<void> {
+    public async deleteProduct(@Path() id: number): Promise<void> {
         this.setStatus(204);
         await this.productService.delete(id);
     }

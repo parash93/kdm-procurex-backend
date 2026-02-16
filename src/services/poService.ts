@@ -4,11 +4,11 @@ import { PurchaseOrder, POStatus } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 
 export interface CreatePOParams {
-    supplierId: string;
-    divisionId?: string;
+    supplierId: number;
+    divisionId?: number;
     remarks?: string;
     items: {
-        productId?: string;
+        productId?: number;
         productName?: string;
         sku?: string;
         quantity: number;
@@ -76,7 +76,7 @@ export class PurchaseOrderService {
         });
     }
 
-    public async getById(id: string): Promise<PurchaseOrder | null> {
+    public async getById(id: number): Promise<PurchaseOrder | null> {
         return prisma.purchaseOrder.findUnique({
             where: { id },
             include: {
@@ -104,7 +104,7 @@ export class PurchaseOrderService {
         });
     }
 
-    public async update(id: string, params: Partial<CreatePOParams & { status: POStatus, updatedByUsername?: string }>): Promise<PurchaseOrder> {
+    public async update(id: number, params: Partial<CreatePOParams & { status: POStatus, updatedByUsername?: number }>): Promise<PurchaseOrder> {
         const { items, updatedByUsername, ...headerData } = params;
 
         return prisma.$transaction(async (tx) => {
@@ -131,7 +131,7 @@ export class PurchaseOrderService {
                                     type: 'SUBTRACT',
                                     quantity: item.quantity,
                                     reason: `PO Delivered: ${currentPO.poNumber}`,
-                                    updatedBy: updatedByUsername || 'system'
+                                    updatedBy: updatedByUsername || 0
                                 }
                             });
                         }
@@ -155,7 +155,7 @@ export class PurchaseOrderService {
                                     type: 'ADD',
                                     quantity: item.quantity,
                                     reason: `PO Returned: ${currentPO.poNumber}`,
-                                    updatedBy: updatedByUsername || 'system'
+                                    updatedBy: updatedByUsername || 0
                                 }
                             });
                         }
@@ -208,7 +208,7 @@ export class PurchaseOrderService {
         });
     }
 
-    public async delete(id: string): Promise<void> {
+    public async delete(id: number): Promise<void> {
         await prisma.purchaseOrder.update({
             where: { id },
             data: { status: POStatus.DELETED }

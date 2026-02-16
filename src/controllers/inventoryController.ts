@@ -13,11 +13,11 @@ import { inject, injectable } from "inversify";
 import { InventoryService } from "../services/inventoryService";
 
 interface UpdateStockParams {
-    productId: string;
+    productId: number;
     quantity: number;
     type: 'ADD' | 'SUBTRACT';
     reason: string;
-    updatedBy: string;
+    updatedBy: number;
 }
 
 @Route("inventory")
@@ -36,7 +36,7 @@ export class InventoryController extends Controller {
     }
 
     @Get("history/{productId}")
-    public async getHistory(@Path() productId: string) {
+    public async getHistory(@Path() productId: number) {
         return this.inventoryService.getHistory(productId);
     }
 

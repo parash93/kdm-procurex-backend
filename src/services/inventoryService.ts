@@ -16,7 +16,7 @@ export class InventoryService {
         });
     }
 
-    public async getHistory(productId: string): Promise<InventoryHistory[]> {
+    public async getHistory(productId: number): Promise<InventoryHistory[]> {
         const inventory = await prisma.inventory.findUnique({
             where: { productId }
         });
@@ -32,7 +32,7 @@ export class InventoryService {
         });
     }
 
-    public async updateStock(productId: string, quantity: number, type: 'ADD' | 'SUBTRACT', reason: string, updatedBy: string) {
+    public async updateStock(productId: number, quantity: number, type: 'ADD' | 'SUBTRACT', reason: string, updatedBy: number) {
         return prisma.$transaction(async (tx) => {
             let inventory = await tx.inventory.findUnique({
                 where: { productId }
