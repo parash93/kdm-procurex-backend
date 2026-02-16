@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
     "dev:debug": "concurrently \"nodemon --exec 'node --inspect=0.0.0.0:9229 -r ts-node/register src/server.ts'\" \"nodemon -x tsoa spec-and-routes\"",
-    "build": "tsoa spec-and-routes && tsc",
+    "build": "prisma generate && tsoa spec-and-routes && tsc",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
