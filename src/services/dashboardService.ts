@@ -17,7 +17,7 @@ export interface DashboardStats {
 export interface OrdersByDivision {
     divisionName: string;
     count: number;
-    totalAmount: number;
+    totalQty: number;
 }
 
 @injectable()
@@ -123,19 +123,19 @@ export class DashboardService {
 
         orders.forEach(o => {
             const divName = o.division?.name || 'Unassigned';
-            const total = o.items.reduce((sum, item) => sum + Number(item.totalPrice), 0);
+            const totalQty = o.items.reduce((sum, item) => sum + Number(item.quantity), 0);
 
             if (!divisionsMap[divName]) {
                 divisionsMap[divName] = { count: 0, total: 0 };
             }
             divisionsMap[divName].count += 1;
-            divisionsMap[divName].total += total;
+            divisionsMap[divName].total += totalQty;
         });
 
         return Object.entries(divisionsMap).map(([name, data]) => ({
             divisionName: name,
             count: data.count,
-            totalAmount: data.total
+            totalQty: data.total
         }));
     }
 }

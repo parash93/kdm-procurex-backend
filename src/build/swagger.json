@@ -834,7 +834,7 @@
 						"type": "number",
 						"format": "double"
 					},
-					"totalAmount": {
+					"totalQty": {
 						"type": "number",
 						"format": "double"
 					}
@@ -842,7 +842,7 @@
 				"required": [
 					"divisionName",
 					"count",
-					"totalAmount"
+					"totalQty"
 				],
 				"type": "object",
 				"additionalProperties": false

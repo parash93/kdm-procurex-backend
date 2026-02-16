@@ -292,7 +292,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "divisionName": {"dataType":"string","required":true},
             "count": {"dataType":"double","required":true},
-            "totalAmount": {"dataType":"double","required":true},
+            "totalQty": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
