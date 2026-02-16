@@ -37,57 +37,57 @@ export class TrackingService {
 
                     if (!currentPO) throw new Error("Purchase Order not found");
 
-                    // Handle Inventory Subtraction if status changing to DELIVERED
-                    if (statusValue === POStatus.DELIVERED && currentPO.status !== POStatus.DELIVERED) {
-                        for (const item of currentPO.items) {
-                            if (item.productId) {
-                                const inv = await tx.inventory.findUnique({
-                                    where: { productId: item.productId }
-                                });
-                                if (inv) {
-                                    await tx.inventory.update({
-                                        where: { id: inv.id },
-                                        data: { quantity: { decrement: item.quantity } }
-                                    });
-                                    await tx.inventoryHistory.create({
-                                        data: {
-                                            inventoryId: inv.id,
-                                            type: 'SUBTRACT',
-                                            quantity: item.quantity,
-                                            reason: `PO Delivered: ${currentPO.poNumber}`,
-                                            updatedBy: params.updatedBy || 0
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
+                    // // Handle Inventory Subtraction if status changing to DELIVERED
+                    // if (statusValue === POStatus.DELIVERED && currentPO.status !== POStatus.DELIVERED) {
+                    //     for (const item of currentPO.items) {
+                    //         if (item.productId) {
+                    //             const inv = await tx.inventory.findUnique({
+                    //                 where: { productId: item.productId }
+                    //             });
+                    //             if (inv) {
+                    //                 await tx.inventory.update({
+                    //                     where: { id: inv.id },
+                    //                     data: { quantity: { decrement: item.quantity } }
+                    //                 });
+                    //                 await tx.inventoryHistory.create({
+                    //                     data: {
+                    //                         inventoryId: inv.id,
+                    //                         type: 'SUBTRACT',
+                    //                         quantity: item.quantity,
+                    //                         reason: `PO Delivered: ${currentPO.poNumber}`,
+                    //                         updatedBy: params.updatedBy || 0
+                    //                     }
+                    //                 });
+                    //             }
+                    //         }
+                    //     }
+                    // }
 
-                    // Handle Inventory Addition if status changing to RETURNED from DELIVERED
-                    if (statusValue === POStatus.RETURNED && currentPO.status === POStatus.DELIVERED) {
-                        for (const item of currentPO.items) {
-                            if (item.productId) {
-                                const inv = await tx.inventory.findUnique({
-                                    where: { productId: item.productId }
-                                });
-                                if (inv) {
-                                    await tx.inventory.update({
-                                        where: { id: inv.id },
-                                        data: { quantity: { increment: item.quantity } }
-                                    });
-                                    await tx.inventoryHistory.create({
-                                        data: {
-                                            inventoryId: inv.id,
-                                            type: 'ADD',
-                                            quantity: item.quantity,
-                                            reason: `PO Returned: ${currentPO.poNumber}`,
-                                            updatedBy: params.updatedBy || 0
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
+                    // // Handle Inventory Addition if status changing to RETURNED from DELIVERED
+                    // if (statusValue === POStatus.RETURNED && currentPO.status === POStatus.DELIVERED) {
+                    //     for (const item of currentPO.items) {
+                    //         if (item.productId) {
+                    //             const inv = await tx.inventory.findUnique({
+                    //                 where: { productId: item.productId }
+                    //             });
+                    //             if (inv) {
+                    //                 await tx.inventory.update({
+                    //                     where: { id: inv.id },
+                    //                     data: { quantity: { increment: item.quantity } }
+                    //                 });
+                    //                 await tx.inventoryHistory.create({
+                    //                     data: {
+                    //                         inventoryId: inv.id,
+                    //                         type: 'ADD',
+                    //                         quantity: item.quantity,
+                    //                         reason: `PO Returned: ${currentPO.poNumber}`,
+                    //                         updatedBy: params.updatedBy || 0
+                    //                     }
+                    //                 });
+                    //             }
+                    //         }
+                    //     }
+                    // }
 
                     // Update PO status
                     await tx.purchaseOrder.update({

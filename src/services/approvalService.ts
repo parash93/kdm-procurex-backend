@@ -42,18 +42,18 @@ export class ApprovalService {
 
                     if (!po) throw new Error("Purchase Order not found");
 
-                    for (const item of po.items) {
-                        if (item.productId) {
-                            const inv = await tx.inventory.findUnique({
-                                where: { productId: item.productId },
-                                include: { product: true }
-                            });
+                    // for (const item of po.items) {
+                    //     if (item.productId) {
+                    //         const inv = await tx.inventory.findUnique({
+                    //             where: { productId: item.productId },
+                    //             include: { product: true }
+                    //         });
 
-                            if (!inv || inv.quantity < item.quantity) {
-                                throw new Error(`Insufficient stock for product: ${inv?.product?.name || item.productName}. Required: ${item.quantity}, Available: ${inv?.quantity || 0}`);
-                            }
-                        }
-                    }
+                    //         if (!inv || inv.quantity < item.quantity) {
+                    //             throw new Error(`Insufficient stock for product: ${inv?.product?.name || item.productName}. Required: ${item.quantity}, Available: ${inv?.quantity || 0}`);
+                    //         }
+                    //     }
+                    // }
 
                     newStatus = POStatus.ORDER_PLACED;
                 }
