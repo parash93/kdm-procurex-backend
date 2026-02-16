@@ -171,6 +171,7 @@ model Approval {
 enum Role {
   ADMIN
   OPERATIONS
+  SALES_MANAGER
 }
 
 enum EntityStatus {

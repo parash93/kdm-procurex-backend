@@ -11,7 +11,8 @@
 				"type": "string",
 				"enum": [
 					"ADMIN",
-					"OPERATIONS"
+					"OPERATIONS",
+					"SALES_MANAGER"
 				]
 			},
 			"_36_Enums.UserStatus": {
@@ -546,6 +547,10 @@
 					"remarks": {
 						"type": "string"
 					},
+					"poDate": {
+						"type": "string",
+						"format": "date-time"
+					},
 					"items": {
 						"items": {
 							"properties": {
@@ -608,6 +613,10 @@
 					},
 					"remarks": {
 						"type": "string"
+					},
+					"poDate": {
+						"type": "string",
+						"format": "date-time"
 					},
 					"items": {
 						"items": {

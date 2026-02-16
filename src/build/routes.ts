@@ -41,7 +41,7 @@ const expressAuthenticationRecasted = expressAuthentication as (req: ExRequest, 
 const models: TsoaRoute.Models = {
     "_36_Enums.Role": {
         "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADMIN"]},{"dataType":"enum","enums":["OPERATIONS"]}],"validators":{}},
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ADMIN"]},{"dataType":"enum","enums":["OPERATIONS"]},{"dataType":"enum","enums":["SALES_MANAGER"]}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "_36_Enums.UserStatus": {
@@ -219,6 +219,7 @@ const models: TsoaRoute.Models = {
             "supplierId": {"dataType":"double","required":true},
             "divisionId": {"dataType":"double"},
             "remarks": {"dataType":"string"},
+            "poDate": {"dataType":"datetime"},
             "items": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"expectedDeliveryDate":{"dataType":"datetime"},"remarks":{"dataType":"string"},"totalPrice":{"dataType":"double","required":true},"unitPrice":{"dataType":"double","required":true},"quantity":{"dataType":"double","required":true},"sku":{"dataType":"string"},"productName":{"dataType":"string"},"productId":{"dataType":"double"}}},"required":true},
         },
         "additionalProperties": false,
@@ -226,7 +227,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Partial_CreatePOParams-and-_status-POStatus__": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"supplierId":{"dataType":"double"},"divisionId":{"dataType":"double"},"remarks":{"dataType":"string"},"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"expectedDeliveryDate":{"dataType":"datetime"},"remarks":{"dataType":"string"},"totalPrice":{"dataType":"double","required":true},"unitPrice":{"dataType":"double","required":true},"quantity":{"dataType":"double","required":true},"sku":{"dataType":"string"},"productName":{"dataType":"string"},"productId":{"dataType":"double"}}}},"status":{"ref":"_36_Enums.POStatus"}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"supplierId":{"dataType":"double"},"divisionId":{"dataType":"double"},"remarks":{"dataType":"string"},"poDate":{"dataType":"datetime"},"items":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"expectedDeliveryDate":{"dataType":"datetime"},"remarks":{"dataType":"string"},"totalPrice":{"dataType":"double","required":true},"unitPrice":{"dataType":"double","required":true},"quantity":{"dataType":"double","required":true},"sku":{"dataType":"string"},"productName":{"dataType":"string"},"productId":{"dataType":"double"}}}},"status":{"ref":"_36_Enums.POStatus"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UpdateStockParams": {

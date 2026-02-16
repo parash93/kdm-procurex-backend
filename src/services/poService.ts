@@ -7,6 +7,7 @@ export interface CreatePOParams {
     supplierId: number;
     divisionId?: number;
     remarks?: string;
+    poDate?: Date;
     items: {
         productId?: number;
         productName?: string;
@@ -32,6 +33,7 @@ export class PurchaseOrderService {
                 supplierId: params.supplierId,
                 divisionId: params.divisionId,
                 remarks: params.remarks,
+                poDate: params.poDate,
                 status: POStatus.DRAFT,
                 items: {
                     create: params.items.map(item => ({
