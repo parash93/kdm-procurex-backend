@@ -38,7 +38,7 @@ export class DashboardService {
             prisma.purchaseOrder.count({
                 where: {
                     status: {
-                        notIn: [POStatus.DELIVERED, POStatus.CLOSED, POStatus.REJECTED_L1, POStatus.CANCELLED]
+                        notIn: [POStatus.FULLY_DELIVERED, POStatus.CLOSED, POStatus.REJECTED_L1, POStatus.CANCELLED]
                     }
                 }
             }),
@@ -63,7 +63,7 @@ export class DashboardService {
         const delayedOrdersCount = await prisma.purchaseOrder.count({
             where: {
                 status: {
-                    notIn: [POStatus.DELIVERED, POStatus.CLOSED, POStatus.REJECTED_L1, POStatus.DRAFT, POStatus.CANCELLED]
+                    notIn: [POStatus.FULLY_DELIVERED, POStatus.CLOSED, POStatus.REJECTED_L1, POStatus.CANCELLED]
                 },
                 items: {
                     some: {
@@ -93,7 +93,7 @@ export class DashboardService {
         return prisma.purchaseOrder.findMany({
             where: {
                 status: {
-                    notIn: [POStatus.DELIVERED, POStatus.CLOSED, POStatus.REJECTED_L1, POStatus.DRAFT, POStatus.CANCELLED]
+                    notIn: [POStatus.FULLY_DELIVERED, POStatus.CLOSED, POStatus.REJECTED_L1, POStatus.CANCELLED]
                 },
                 items: {
                     some: {

@@ -73,6 +73,7 @@ model Supplier {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   purchaseOrders PurchaseOrder[]
+  dispatches     Dispatch[]
 }
 
 model PurchaseOrder {
@@ -88,7 +89,6 @@ model PurchaseOrder {
   supplier             Supplier            @relation(fields: [supplierId], references: [id])
   division             Division?           @relation(fields: [divisionId], references: [id])
   items                PurchaseOrderItem[]
-  stageUpdates         StageUpdate[]
   approvals            Approval[]
 
   @@index([supplierId])
@@ -108,9 +108,41 @@ model PurchaseOrderItem {
   expectedDeliveryDate DateTime?
   purchaseOrder        PurchaseOrder  @relation(fields: [poId], references: [id])
   product              Product?       @relation(fields: [productId], references: [id])
+  dispatchItems        DispatchItem[]
+  dispatchedQuantity   Int            @default(0) // Denormalized count
 
   @@index([poId])
   @@index([productId])
+}
+
+model Dispatch {
+  id              Int            @id @default(autoincrement())
+  supplierId      Int
+  dispatchDate    DateTime       @default(now())
+  referenceNumber String?        // e.g. Invoice / DO Number
+  status          DispatchStatus @default(DRAFT)
+  remarks         String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  supplier        Supplier       @relation(fields: [supplierId], references: [id])
+  items           DispatchItem[]
+  stageUpdates    StageUpdate[]
+
+  @@index([supplierId])
+}
+
+model DispatchItem {
+  id         Int               @id @default(autoincrement())
+  dispatchId Int
+  poItemId   Int
+  quantity   Int
+  
+  dispatch   Dispatch          @relation(fields: [dispatchId], references: [id], onDelete: Cascade)
+  poItem     PurchaseOrderItem @relation(fields: [poItemId], references: [id])
+
+  @@index([dispatchId])
+  @@index([poItemId])
 }
 
 model Inventory {
@@ -127,7 +159,7 @@ model InventoryHistory {
   inventoryId   Int
   type          String    // ADD / SUBTRACT
   quantity      Int
-  reason        String?   // e.g., "Manually added", "PO Delivered: PO-123"
+  reason        String?   // e.g., "Manually added"
   updatedBy     Int?      // user ID
   timestamp     DateTime  @default(now())
   inventory     Inventory @relation(fields: [inventoryId], references: [id])
@@ -139,17 +171,17 @@ model InventoryHistory {
 
 model StageUpdate {
   id            Int           @id @default(autoincrement())
-  poId          Int
+  dispatchId    Int
   stage         String
   notes         String?
   attachmentUrl String?
   photoUrl      String?
   updatedBy     Int?
   timestamp     DateTime      @default(now())
-  purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id])
+  dispatch      Dispatch      @relation(fields: [dispatchId], references: [id])
   updatedByUser User?         @relation(fields: [updatedBy], references: [id])
 
-  @@index([poId])
+  @@index([dispatchId])
   @@index([updatedBy])
 }
 
@@ -170,7 +202,7 @@ model Approval {
 
 model AuditLog {
   id           Int      @id @default(autoincrement())
-  entityType   String   // SUPPLIER, ORDER, DIVISION, PRODUCT_CATEGORY, PRODUCT, INVENTORY, USER
+  entityType   String   // SUPPLIER, ORDER, DIVISION, PRODUCT_CATEGORY, PRODUCT, INVENTORY, USER, DISPATCH
   entityId     Int      // ID of the entity acted upon
   action       String   // CREATE, UPDATE, DELETE, APPROVE, REJECT, STATUS_CHANGE, SUBMIT, STAGE_UPDATE, LOGIN, STOCK_UPDATE
   userId       Int?     // Who performed the action (null for system actions)
@@ -212,15 +244,19 @@ enum POStatus {
   APPROVED_L1
   REJECTED_L1
   ORDER_PLACED
-  IN_PRODUCTION
-  QUALITY_INSPECTION
-  READY_TO_SHIP
-  SHIPPED
-  IN_TRANSIT
-  PORT_CLEARANCE
-  DELIVERED
-  RETURNED
+  PARTIALLY_DELIVERED
+  FULLY_DELIVERED
   CLOSED
   CANCELLED
   DELETED
+}
+
+enum DispatchStatus {
+  DRAFT
+  PACKED
+  SHIPPED
+  IN_TRANSIT
+  DELIVERED
+  RETURNED
+  CANCELLED
 }

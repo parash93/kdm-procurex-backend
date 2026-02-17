@@ -15,8 +15,6 @@ import { UserService } from "../services/userService";
 import { UserController } from "../controllers/userController";
 import { ApprovalService } from "../services/approvalService";
 import { ApprovalController } from "../controllers/approvalController";
-import { TrackingService } from "../services/trackingService";
-import { TrackingController } from "../controllers/trackingController";
 import { DashboardService } from "../services/dashboardService";
 import { DashboardController } from "../controllers/dashboardController";
 import { AuthService } from "../services/authService";
@@ -25,8 +23,13 @@ import { InventoryService } from "../services/inventoryService";
 import { InventoryController } from "../controllers/inventoryController";
 import { AuditService } from "../services/auditService";
 import { AuditController } from "../controllers/auditController";
+import { DispatchService } from "../services/dispatchService";
+import { DispatchController } from "../controllers/dispatchController";
 
 const iocContainer = new Container();
+
+iocContainer.bind<DispatchService>(DispatchService).toSelf().inSingletonScope();
+iocContainer.bind<DispatchController>(DispatchController).toSelf().inSingletonScope();
 
 iocContainer.bind<SupplierService>(SupplierService).toSelf().inSingletonScope();
 iocContainer.bind<SupplierController>(SupplierController).toSelf().inSingletonScope();
@@ -45,8 +48,7 @@ iocContainer.bind<UserService>(UserService).toSelf().inSingletonScope();
 iocContainer.bind<UserController>(UserController).toSelf().inSingletonScope();
 iocContainer.bind<ApprovalService>(ApprovalService).toSelf().inSingletonScope();
 iocContainer.bind<ApprovalController>(ApprovalController).toSelf().inSingletonScope();
-iocContainer.bind<TrackingService>(TrackingService).toSelf().inSingletonScope();
-iocContainer.bind<TrackingController>(TrackingController).toSelf().inSingletonScope();
+// TrackingService and TrackingController removed
 iocContainer.bind<DashboardService>(DashboardService).toSelf().inSingletonScope();
 iocContainer.bind<DashboardController>(DashboardController).toSelf().inSingletonScope();
 iocContainer.bind<AuthService>(AuthService).toSelf().inSingletonScope();

@@ -87,83 +87,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"DefaultSelection_Prisma._36_StageUpdatePayload_": {
-				"properties": {
-					"timestamp": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"photoUrl": {
-						"type": "string"
-					},
-					"attachmentUrl": {
-						"type": "string"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"stage": {
-						"type": "string"
-					},
-					"poId": {
-						"type": "number",
-						"format": "double"
-					},
-					"id": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"timestamp",
-					"updatedBy",
-					"photoUrl",
-					"attachmentUrl",
-					"notes",
-					"stage",
-					"poId",
-					"id"
-				],
-				"type": "object"
-			},
-			"StageUpdate": {
-				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_StageUpdatePayload_",
-				"description": "Model StageUpdate"
-			},
-			"StageUpdateParams": {
-				"properties": {
-					"poId": {
-						"type": "number",
-						"format": "double"
-					},
-					"stage": {
-						"type": "string"
-					},
-					"notes": {
-						"type": "string"
-					},
-					"photoUrl": {
-						"type": "string"
-					},
-					"updatedBy": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatePOStatus": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"poId",
-					"stage"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"_36_Enums.SupplierStatus": {
 				"type": "string",
 				"enum": [
@@ -577,14 +500,8 @@
 					"APPROVED_L1",
 					"REJECTED_L1",
 					"ORDER_PLACED",
-					"IN_PRODUCTION",
-					"QUALITY_INSPECTION",
-					"READY_TO_SHIP",
-					"SHIPPED",
-					"IN_TRANSIT",
-					"PORT_CLEARANCE",
-					"DELIVERED",
-					"RETURNED",
+					"PARTIALLY_DELIVERED",
+					"FULLY_DELIVERED",
 					"CLOSED",
 					"CANCELLED"
 				]
@@ -953,6 +870,159 @@
 				"type": "object",
 				"description": "Make all properties in T optional"
 			},
+			"_36_Enums.DispatchStatus": {
+				"type": "string",
+				"enum": [
+					"DRAFT",
+					"CANCELLED",
+					"PACKED",
+					"SHIPPED",
+					"IN_TRANSIT",
+					"DELIVERED",
+					"RETURNED"
+				]
+			},
+			"DefaultSelection_Prisma._36_DispatchPayload_": {
+				"properties": {
+					"referenceNumber": {
+						"type": "string"
+					},
+					"dispatchDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"remarks": {
+						"type": "string"
+					},
+					"supplierId": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"status": {
+						"$ref": "#/components/schemas/_36_Enums.DispatchStatus"
+					},
+					"id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"referenceNumber",
+					"dispatchDate",
+					"remarks",
+					"supplierId",
+					"updatedAt",
+					"createdAt",
+					"status",
+					"id"
+				],
+				"type": "object"
+			},
+			"Dispatch": {
+				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_DispatchPayload_",
+				"description": "Model Dispatch"
+			},
+			"DispatchCreationParams": {
+				"properties": {
+					"supplierId": {
+						"type": "number",
+						"format": "double"
+					},
+					"referenceNumber": {
+						"type": "string"
+					},
+					"remarks": {
+						"type": "string"
+					},
+					"items": {
+						"items": {
+							"properties": {
+								"quantity": {
+									"type": "number",
+									"format": "double"
+								},
+								"poItemId": {
+									"type": "number",
+									"format": "double"
+								}
+							},
+							"required": [
+								"quantity",
+								"poItemId"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"supplierId",
+					"items"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PaginatedDispatches": {
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/Dispatch"
+						},
+						"type": "array"
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"page": {
+						"type": "number",
+						"format": "double"
+					},
+					"limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPages": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"data",
+					"total",
+					"page",
+					"limit",
+					"totalPages"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DispatchStatus": {
+				"$ref": "#/components/schemas/_36_Enums.DispatchStatus"
+			},
+			"UpdateStatusParams": {
+				"properties": {
+					"status": {
+						"$ref": "#/components/schemas/DispatchStatus"
+					},
+					"notes": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Record_string.number_": {
 				"properties": {},
 				"additionalProperties": {
@@ -1219,20 +1289,20 @@
 						"type": "number",
 						"format": "double"
 					},
+					"poId": {
+						"type": "number",
+						"format": "double"
+					},
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					},
 					"level": {
 						"type": "number",
 						"format": "double"
 					},
 					"remarks": {
 						"type": "string"
-					},
-					"timestamp": {
-						"type": "string",
-						"format": "date-time"
-					},
-					"poId": {
-						"type": "number",
-						"format": "double"
 					},
 					"id": {
 						"type": "number",
@@ -1242,10 +1312,10 @@
 				"required": [
 					"decision",
 					"approverId",
+					"poId",
+					"timestamp",
 					"level",
 					"remarks",
-					"timestamp",
-					"poId",
 					"id"
 				],
 				"type": "object"
@@ -1409,77 +1479,6 @@
 						}
 					}
 				]
-			}
-		},
-		"/tracking/{poId}": {
-			"get": {
-				"operationId": "GetHistory",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/StageUpdate"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Tracking"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "poId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					}
-				]
-			}
-		},
-		"/tracking": {
-			"post": {
-				"operationId": "AddUpdate",
-				"responses": {
-					"201": {
-						"description": "Created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/StageUpdate"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Tracking"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/StageUpdateParams"
-							}
-						}
-					}
-				}
 			}
 		},
 		"/suppliers/paginated": {
@@ -2520,6 +2519,14 @@
 								"schema": {
 									"items": {
 										"properties": {
+											"timestamp": {
+												"type": "string",
+												"format": "date-time"
+											},
+											"updatedBy": {
+												"type": "number",
+												"format": "double"
+											},
 											"reason": {
 												"type": "string"
 											},
@@ -2534,26 +2541,18 @@
 												"type": "number",
 												"format": "double"
 											},
-											"timestamp": {
-												"type": "string",
-												"format": "date-time"
-											},
-											"updatedBy": {
-												"type": "number",
-												"format": "double"
-											},
 											"id": {
 												"type": "number",
 												"format": "double"
 											}
 										},
 										"required": [
+											"timestamp",
+											"updatedBy",
 											"reason",
 											"type",
 											"inventoryId",
 											"quantity",
-											"timestamp",
-											"updatedBy",
 											"id"
 										],
 										"type": "object"
@@ -2887,6 +2886,192 @@
 						}
 					}
 				]
+			}
+		},
+		"/dispatches": {
+			"post": {
+				"operationId": "CreateDispatch",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Dispatch"
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a new dispatch entry",
+				"tags": [
+					"Dispatches"
+				],
+				"security": [
+					{
+						"jwt": [
+							"OPERATIONS",
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DispatchCreationParams"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"operationId": "GetDispatches",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginatedDispatches"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get paginated dispatches",
+				"tags": [
+					"Dispatches"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/dispatches/{id}": {
+			"get": {
+				"operationId": "GetDispatchById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Dispatch"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Get dispatch details by ID",
+				"tags": [
+					"Dispatches"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/dispatches/{id}/status": {
+			"put": {
+				"operationId": "UpdateStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Dispatch"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update dispatch status (and add tracking/timeline event)",
+				"tags": [
+					"Dispatches"
+				],
+				"security": [
+					{
+						"jwt": [
+							"OPERATIONS",
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateStatusParams"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/dashboard/stats": {
