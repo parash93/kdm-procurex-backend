@@ -223,6 +223,42 @@
 				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_SupplierPayload_",
 				"description": "Model Supplier"
 			},
+			"PaginatedResult_Supplier_": {
+				"description": "Shared pagination types used across all services.",
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/Supplier"
+						},
+						"type": "array"
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"page": {
+						"type": "number",
+						"format": "double"
+					},
+					"limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPages": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"data",
+					"total",
+					"page",
+					"limit",
+					"totalPages"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"SupplierStatus": {
 				"$ref": "#/components/schemas/_36_Enums.SupplierStatus"
 			},
@@ -346,6 +382,42 @@
 				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_ProductPayload_",
 				"description": "Model Product"
 			},
+			"PaginatedResult_Product_": {
+				"description": "Shared pagination types used across all services.",
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/Product"
+						},
+						"type": "array"
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"page": {
+						"type": "number",
+						"format": "double"
+					},
+					"limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPages": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"data",
+					"total",
+					"page",
+					"limit",
+					"totalPages"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"EntityStatus": {
 				"$ref": "#/components/schemas/_36_Enums.EntityStatus"
 			},
@@ -432,6 +504,42 @@
 			"ProductCategory": {
 				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_ProductCategoryPayload_",
 				"description": "Model ProductCategory"
+			},
+			"PaginatedResult_ProductCategory_": {
+				"description": "Shared pagination types used across all services.",
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/ProductCategory"
+						},
+						"type": "array"
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"page": {
+						"type": "number",
+						"format": "double"
+					},
+					"limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPages": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"data",
+					"total",
+					"page",
+					"limit",
+					"totalPages"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"ProductCategoryCreationParams": {
 				"properties": {
@@ -533,6 +641,42 @@
 			"PurchaseOrder": {
 				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_PurchaseOrderPayload_",
 				"description": "Model PurchaseOrder"
+			},
+			"PaginatedResult_PurchaseOrder_": {
+				"description": "Shared pagination types used across all services.",
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/PurchaseOrder"
+						},
+						"type": "array"
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"page": {
+						"type": "number",
+						"format": "double"
+					},
+					"limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPages": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"data",
+					"total",
+					"page",
+					"limit",
+					"totalPages"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"CreatePOParams": {
 				"properties": {
@@ -739,6 +883,42 @@
 			"Division": {
 				"$ref": "#/components/schemas/DefaultSelection_Prisma._36_DivisionPayload_",
 				"description": "Model Division"
+			},
+			"PaginatedResult_Division_": {
+				"description": "Shared pagination types used across all services.",
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/Division"
+						},
+						"type": "array"
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"page": {
+						"type": "number",
+						"format": "double"
+					},
+					"limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPages": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"data",
+					"total",
+					"page",
+					"limit",
+					"totalPages"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"DivisionCreationParams": {
 				"properties": {
@@ -1217,6 +1397,57 @@
 				}
 			}
 		},
+		"/suppliers/paginated": {
+			"get": {
+				"operationId": "GetSuppliersPaginated",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginatedResult_Supplier_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Suppliers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/suppliers/{id}": {
 			"get": {
 				"operationId": "GetSupplier",
@@ -1370,6 +1601,57 @@
 						}
 					}
 				}
+			}
+		},
+		"/products/paginated": {
+			"get": {
+				"operationId": "GetProductsPaginated",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginatedResult_Product_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Product"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/products": {
@@ -1527,6 +1809,57 @@
 				]
 			}
 		},
+		"/product-categories/paginated": {
+			"get": {
+				"operationId": "GetCategoriesPaginated",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginatedResult_ProductCategory_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"ProductCategory"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/product-categories": {
 			"get": {
 				"operationId": "GetCategories",
@@ -1677,6 +2010,65 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/orders/paginated": {
+			"get": {
+				"operationId": "GetOrdersPaginated",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginatedResult_PurchaseOrder_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Purchase Orders"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]
@@ -2140,6 +2532,57 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/divisions/paginated": {
+			"get": {
+				"operationId": "GetDivisionsPaginated",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginatedResult_Division_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Division"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/divisions": {

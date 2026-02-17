@@ -7,12 +7,14 @@ import {
     Route,
     Body,
     Path,
+    Query,
     SuccessResponse,
     Tags,
 } from "tsoa";
 import { inject, injectable } from "inversify";
 import { DivisionService, DivisionCreationParams } from "../services/divisionService";
 import { Division } from "@prisma/client";
+import { PaginatedResult } from "../types/pagination";
 
 @Route("divisions")
 @Tags("Division")
@@ -22,6 +24,15 @@ export class DivisionController extends Controller {
         @inject(DivisionService) private divisionService: DivisionService
     ) {
         super();
+    }
+
+    @Get("paginated")
+    public async getDivisionsPaginated(
+        @Query() page: number = 1,
+        @Query() limit: number = 10,
+        @Query() search?: string
+    ): Promise<PaginatedResult<Division>> {
+        return this.divisionService.getPaginated(page, limit, search);
     }
 
     @Get()
@@ -39,7 +50,6 @@ export class DivisionController extends Controller {
     public async createDivision(
         @Body() requestBody: DivisionCreationParams
     ): Promise<Division> {
-        this.setStatus(210); // Using 201 via decorator might be cleaner but tsoa handle setStatus
         this.setStatus(201);
         return this.divisionService.create(requestBody);
     }

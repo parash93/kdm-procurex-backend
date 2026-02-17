@@ -6,6 +6,7 @@ import {
     Path,
     Post,
     Put,
+    Query,
     Route,
     SuccessResponse,
     Tags,
@@ -13,6 +14,7 @@ import {
 import { inject, injectable } from "inversify";
 import { SupplierService, SupplierCreationParams } from "../services/supplierService";
 import { Supplier } from "@prisma/client";
+import { PaginatedResult } from "../types/pagination";
 
 @Route("suppliers")
 @Tags("Suppliers")
@@ -22,6 +24,15 @@ export class SupplierController extends Controller {
         @inject(SupplierService) private supplierService: SupplierService
     ) {
         super();
+    }
+
+    @Get("paginated")
+    public async getSuppliersPaginated(
+        @Query() page: number = 1,
+        @Query() limit: number = 10,
+        @Query() search?: string
+    ): Promise<PaginatedResult<Supplier>> {
+        return this.supplierService.getPaginated(page, limit, search);
     }
 
     @Get("{id}")

@@ -1,7 +1,8 @@
 import { injectable } from "inversify";
 import { prisma } from "../repositories/prismaContext";
-import { PurchaseOrder, POStatus } from "@prisma/client";
+import { PurchaseOrder, POStatus, Prisma } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
+import { PaginatedResult } from "../types/pagination";
 
 export interface CreatePOParams {
     supplierId: number;
@@ -76,6 +77,44 @@ export class PurchaseOrderService {
                 createdAt: 'desc'
             }
         });
+    }
+
+    public async getPaginated(
+        page: number = 1,
+        limit: number = 10,
+        search?: string,
+        status?: string
+    ): Promise<PaginatedResult<PurchaseOrder>> {
+        const where: Prisma.PurchaseOrderWhereInput = {
+            status: { not: POStatus.DELETED },
+            ...(status && status !== 'ALL' && {
+                status: { equals: status as POStatus, not: POStatus.DELETED },
+            }),
+            ...(search && {
+                OR: [
+                    { poNumber: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+                    { supplier: { companyName: { contains: search, mode: 'insensitive' as Prisma.QueryMode } } },
+                    { division: { name: { contains: search, mode: 'insensitive' as Prisma.QueryMode } } },
+                ],
+            }),
+        };
+
+        const [total, data] = await prisma.$transaction([
+            prisma.purchaseOrder.count({ where }),
+            prisma.purchaseOrder.findMany({
+                where,
+                include: {
+                    supplier: true,
+                    division: true,
+                    items: { include: { product: true } },
+                },
+                orderBy: { createdAt: 'desc' },
+                skip: (page - 1) * limit,
+                take: limit,
+            }),
+        ]);
+
+        return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
     }
 
     public async getById(id: number): Promise<PurchaseOrder | null> {

@@ -1,6 +1,7 @@
-import { Product, EntityStatus } from "@prisma/client";
+import { Product, EntityStatus, Prisma } from "@prisma/client";
 import { prisma } from "../repositories/prismaContext";
 import { injectable } from "inversify";
+import { PaginatedResult } from "../types/pagination";
 
 export interface ProductCreationParams {
     name: string;
@@ -25,6 +26,36 @@ export class ProductService {
             },
             orderBy: { createdAt: 'desc' }
         });
+    }
+
+    public async getPaginated(
+        page: number = 1,
+        limit: number = 10,
+        search?: string
+    ): Promise<PaginatedResult<Product>> {
+        const where: Prisma.ProductWhereInput = {
+            status: { not: EntityStatus.DELETED },
+            ...(search && {
+                OR: [
+                    { name: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+                    { description: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+                    { category: { name: { contains: search, mode: 'insensitive' as Prisma.QueryMode } } },
+                ],
+            }),
+        };
+
+        const [total, data] = await prisma.$transaction([
+            prisma.product.count({ where }),
+            prisma.product.findMany({
+                where,
+                include: { category: true, inventory: true },
+                orderBy: { createdAt: 'desc' },
+                skip: (page - 1) * limit,
+                take: limit,
+            }),
+        ]);
+
+        return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
     }
 
     public async getById(id: number): Promise<Product | null> {

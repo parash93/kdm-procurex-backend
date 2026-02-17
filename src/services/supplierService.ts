@@ -1,6 +1,7 @@
 import { injectable } from "inversify";
 import { prisma } from "../repositories/prismaContext";
-import { Supplier, SupplierStatus } from "@prisma/client";
+import { Supplier, SupplierStatus, Prisma } from "@prisma/client";
+import { PaginatedResult } from "../types/pagination";
 
 export interface SupplierCreationParams {
     companyName: string;
@@ -27,6 +28,35 @@ export class SupplierService {
                 }
             }
         });
+    }
+
+    public async getPaginated(
+        page: number = 1,
+        limit: number = 10,
+        search?: string
+    ): Promise<PaginatedResult<Supplier>> {
+        const where: Prisma.SupplierWhereInput = {
+            status: { not: SupplierStatus.DELETED },
+            ...(search && {
+                OR: [
+                    { companyName: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+                    { contactPerson: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+                    { email: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+                ],
+            }),
+        };
+
+        const [total, data] = await prisma.$transaction([
+            prisma.supplier.count({ where }),
+            prisma.supplier.findMany({
+                where,
+                orderBy: { createdAt: 'desc' },
+                skip: (page - 1) * limit,
+                take: limit,
+            }),
+        ]);
+
+        return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
     }
 
     public async create(params: SupplierCreationParams): Promise<Supplier> {

@@ -7,12 +7,14 @@ import {
     Route,
     Body,
     Path,
+    Query,
     SuccessResponse,
     Tags,
 } from "tsoa";
 import { inject, injectable } from "inversify";
 import { ProductCategoryService, ProductCategoryCreationParams } from "../services/productCategoryService";
 import { ProductCategory } from "@prisma/client";
+import { PaginatedResult } from "../types/pagination";
 
 @Route("product-categories")
 @Tags("ProductCategory")
@@ -22,6 +24,15 @@ export class ProductCategoryController extends Controller {
         @inject(ProductCategoryService) private categoryService: ProductCategoryService
     ) {
         super();
+    }
+
+    @Get("paginated")
+    public async getCategoriesPaginated(
+        @Query() page: number = 1,
+        @Query() limit: number = 10,
+        @Query() search?: string
+    ): Promise<PaginatedResult<ProductCategory>> {
+        return this.categoryService.getPaginated(page, limit, search);
     }
 
     @Get()
