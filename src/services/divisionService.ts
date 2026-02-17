@@ -1,7 +1,8 @@
 import { Division, EntityStatus, Prisma } from "@prisma/client";
 import { prisma } from "../repositories/prismaContext";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { PaginatedResult } from "../types/pagination";
+import { AuditService } from "./auditService";
 
 export interface DivisionCreationParams {
     name: string;
@@ -11,6 +12,8 @@ export interface DivisionCreationParams {
 
 @injectable()
 export class DivisionService {
+    constructor(@inject(AuditService) private auditService: AuditService) { }
+
     public async getAll(): Promise<Division[]> {
         return prisma.division.findMany({
             where: {
@@ -56,26 +59,64 @@ export class DivisionService {
         });
     }
 
-    public async create(params: DivisionCreationParams): Promise<Division> {
-        return prisma.division.create({
+    public async create(params: DivisionCreationParams, userId?: number, username?: string): Promise<Division> {
+        const division = await prisma.division.create({
             data: {
                 ...params,
                 status: params.status || EntityStatus.ACTIVE
             }
         });
+
+        this.auditService.log({
+            entityType: "DIVISION",
+            entityId: division.id,
+            action: "CREATE",
+            userId,
+            username,
+            newData: division,
+        });
+
+        return division;
     }
 
-    public async update(id: number, params: Partial<DivisionCreationParams>): Promise<Division> {
-        return prisma.division.update({
+    public async update(id: number, params: Partial<DivisionCreationParams>, userId?: number, username?: string): Promise<Division> {
+        const previous = await prisma.division.findUnique({ where: { id } });
+
+        const division = await prisma.division.update({
             where: { id },
             data: params
         });
+
+        this.auditService.log({
+            entityType: "DIVISION",
+            entityId: id,
+            action: "UPDATE",
+            userId,
+            username,
+            previousData: previous,
+            newData: division,
+        });
+
+        return division;
     }
 
-    public async delete(id: number): Promise<Division> {
-        return prisma.division.update({
+    public async delete(id: number, userId?: number, username?: string): Promise<Division> {
+        const previous = await prisma.division.findUnique({ where: { id } });
+
+        const division = await prisma.division.update({
             where: { id },
             data: { status: EntityStatus.DELETED }
         });
+
+        this.auditService.log({
+            entityType: "DIVISION",
+            entityId: id,
+            action: "DELETE",
+            userId,
+            username,
+            previousData: previous,
+        });
+
+        return division;
     }
 }

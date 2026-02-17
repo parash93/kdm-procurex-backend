@@ -1,6 +1,7 @@
 import { Approval, POStatus } from "@prisma/client";
 import { prisma } from "../repositories/prismaContext";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
+import { AuditService } from "./auditService";
 
 export interface ApprovalParams {
     poId: number;
@@ -12,7 +13,9 @@ export interface ApprovalParams {
 
 @injectable()
 export class ApprovalService {
-    public async submitApproval(params: ApprovalParams): Promise<Approval> {
+    constructor(@inject(AuditService) private auditService: AuditService) { }
+
+    public async submitApproval(params: ApprovalParams, userId?: number, username?: string): Promise<Approval> {
         return prisma.$transaction(async (tx) => {
             // Create Approval Record
             const approval = await tx.approval.create({
@@ -25,6 +28,10 @@ export class ApprovalService {
                 }
             });
 
+            const previousPO = await tx.purchaseOrder.findUnique({
+                where: { id: params.poId }
+            });
+
             // Determine PO status transition
             let newStatus: POStatus | undefined;
 
@@ -34,26 +41,12 @@ export class ApprovalService {
                 if (params.level === 1) {
                     newStatus = POStatus.APPROVED_L1;
                 } else if (params.level === 2) {
-                    // CRITICAL: Check inventory before L2 Approval
                     const po = await tx.purchaseOrder.findUnique({
                         where: { id: params.poId },
                         include: { items: true }
                     });
 
                     if (!po) throw new Error("Purchase Order not found");
-
-                    // for (const item of po.items) {
-                    //     if (item.productId) {
-                    //         const inv = await tx.inventory.findUnique({
-                    //             where: { productId: item.productId },
-                    //             include: { product: true }
-                    //         });
-
-                    //         if (!inv || inv.quantity < item.quantity) {
-                    //             throw new Error(`Insufficient stock for product: ${inv?.product?.name || item.productName}. Required: ${item.quantity}, Available: ${inv?.quantity || 0}`);
-                    //         }
-                    //     }
-                    // }
 
                     newStatus = POStatus.ORDER_PLACED;
                 }
@@ -65,6 +58,25 @@ export class ApprovalService {
                     data: { status: newStatus }
                 });
             }
+
+            // Audit log for approval/rejection
+            this.auditService.log({
+                entityType: "ORDER",
+                entityId: params.poId,
+                action: params.decision === "APPROVED" ? "APPROVE" : "REJECT",
+                userId: userId || params.approverId,
+                username,
+                previousData: previousPO,
+                newData: { ...approval, newStatus },
+                metadata: {
+                    poNumber: previousPO?.poNumber,
+                    level: params.level,
+                    decision: params.decision,
+                    remarks: params.remarks,
+                    previousStatus: previousPO?.status,
+                    newStatus: newStatus || previousPO?.status,
+                },
+            });
 
             return approval;
         });

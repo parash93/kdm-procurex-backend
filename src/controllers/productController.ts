@@ -8,9 +8,12 @@ import {
     Body,
     Path,
     Query,
+    Request,
+    Security,
     SuccessResponse,
     Tags,
 } from "tsoa";
+import * as express from "express";
 import { inject, injectable } from "inversify";
 import { ProductService, ProductCreationParams } from "../services/productService";
 import { Product } from "@prisma/client";
@@ -47,25 +50,36 @@ export class ProductController extends Controller {
 
     @SuccessResponse("201", "Created")
     @Post()
+    @Security("jwt")
     public async createProduct(
-        @Body() requestBody: ProductCreationParams
+        @Body() requestBody: ProductCreationParams,
+        @Request() request: express.Request
     ): Promise<Product> {
         this.setStatus(201);
-        return this.productService.create(requestBody);
+        const user = (request as any).user;
+        return this.productService.create(requestBody, user?.id, user?.username);
     }
 
     @Put("{id}")
+    @Security("jwt")
     public async updateProduct(
         @Path() id: number,
-        @Body() requestBody: Partial<ProductCreationParams>
+        @Body() requestBody: Partial<ProductCreationParams>,
+        @Request() request: express.Request
     ): Promise<Product> {
-        return this.productService.update(id, requestBody);
+        const user = (request as any).user;
+        return this.productService.update(id, requestBody, user?.id, user?.username);
     }
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteProduct(@Path() id: number): Promise<void> {
+    @Security("jwt")
+    public async deleteProduct(
+        @Path() id: number,
+        @Request() request: express.Request
+    ): Promise<void> {
         this.setStatus(204);
-        await this.productService.delete(id);
+        const user = (request as any).user;
+        await this.productService.delete(id, user?.id, user?.username);
     }
 }

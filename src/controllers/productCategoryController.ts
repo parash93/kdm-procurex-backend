@@ -8,9 +8,12 @@ import {
     Body,
     Path,
     Query,
+    Request,
+    Security,
     SuccessResponse,
     Tags,
 } from "tsoa";
+import * as express from "express";
 import { inject, injectable } from "inversify";
 import { ProductCategoryService, ProductCategoryCreationParams } from "../services/productCategoryService";
 import { ProductCategory } from "@prisma/client";
@@ -47,25 +50,36 @@ export class ProductCategoryController extends Controller {
 
     @SuccessResponse("201", "Created")
     @Post()
+    @Security("jwt")
     public async createCategory(
-        @Body() requestBody: ProductCategoryCreationParams
+        @Body() requestBody: ProductCategoryCreationParams,
+        @Request() request: express.Request
     ): Promise<ProductCategory> {
         this.setStatus(201);
-        return this.categoryService.create(requestBody);
+        const user = (request as any).user;
+        return this.categoryService.create(requestBody, user?.id, user?.username);
     }
 
     @Put("{id}")
+    @Security("jwt")
     public async updateCategory(
         @Path() id: number,
-        @Body() requestBody: Partial<ProductCategoryCreationParams>
+        @Body() requestBody: Partial<ProductCategoryCreationParams>,
+        @Request() request: express.Request
     ): Promise<ProductCategory> {
-        return this.categoryService.update(id, requestBody);
+        const user = (request as any).user;
+        return this.categoryService.update(id, requestBody, user?.id, user?.username);
     }
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteCategory(@Path() id: number): Promise<void> {
+    @Security("jwt")
+    public async deleteCategory(
+        @Path() id: number,
+        @Request() request: express.Request
+    ): Promise<void> {
         this.setStatus(204);
-        await this.categoryService.delete(id);
+        const user = (request as any).user;
+        await this.categoryService.delete(id, user?.id, user?.username);
     }
 }

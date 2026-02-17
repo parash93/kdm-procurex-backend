@@ -23,6 +23,8 @@ import { AuthService } from "../services/authService";
 import { AuthController } from "../controllers/authController";
 import { InventoryService } from "../services/inventoryService";
 import { InventoryController } from "../controllers/inventoryController";
+import { AuditService } from "../services/auditService";
+import { AuditController } from "../controllers/auditController";
 
 const iocContainer = new Container();
 
@@ -51,5 +53,7 @@ iocContainer.bind<AuthService>(AuthService).toSelf().inSingletonScope();
 iocContainer.bind<AuthController>(AuthController).toSelf().inSingletonScope();
 iocContainer.bind<InventoryService>(InventoryService).toSelf().inSingletonScope();
 iocContainer.bind<InventoryController>(InventoryController).toSelf().inSingletonScope();
+iocContainer.bind<AuditService>(AuditService).toSelf().inSingletonScope();
+iocContainer.bind<AuditController>(AuditController).toSelf().inSingletonScope();
 
 export { iocContainer };

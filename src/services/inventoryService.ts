@@ -1,9 +1,12 @@
 import { prisma } from "../repositories/prismaContext";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { Inventory, InventoryHistory } from "@prisma/client";
+import { AuditService } from "./auditService";
 
 @injectable()
 export class InventoryService {
+    constructor(@inject(AuditService) private auditService: AuditService) { }
+
     public async getAll() {
         return prisma.inventory.findMany({
             include: {
@@ -32,7 +35,7 @@ export class InventoryService {
         });
     }
 
-    public async updateStock(productId: number, quantity: number, type: 'ADD' | 'SUBTRACT', reason: string, updatedBy: number) {
+    public async updateStock(productId: number, quantity: number, type: 'ADD' | 'SUBTRACT', reason: string, updatedBy: number, username?: string) {
         return prisma.$transaction(async (tx) => {
             let inventory = await tx.inventory.findUnique({
                 where: { productId }
@@ -47,6 +50,7 @@ export class InventoryService {
                 });
             }
 
+            const previousQuantity = inventory.quantity;
             const newQuantity = type === 'ADD'
                 ? inventory.quantity + quantity
                 : inventory.quantity - quantity;
@@ -64,6 +68,18 @@ export class InventoryService {
                     reason,
                     updatedBy
                 }
+            });
+
+            // Audit log for stock update
+            this.auditService.log({
+                entityType: "INVENTORY",
+                entityId: productId,
+                action: "STOCK_UPDATE",
+                userId: updatedBy,
+                username,
+                previousData: { productId, quantity: previousQuantity },
+                newData: { productId, quantity: newQuantity },
+                metadata: { type, quantityChanged: quantity, reason },
             });
 
             return updatedInventory;

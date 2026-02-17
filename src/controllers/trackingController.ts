@@ -42,6 +42,6 @@ export class TrackingController extends Controller {
         return this.trackingService.addStageUpdate({
             ...requestBody,
             updatedBy: user?.id
-        });
+        }, user?.id, user?.username);
     }
 }

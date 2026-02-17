@@ -1,7 +1,8 @@
 import { User, Role, UserStatus } from "@prisma/client";
 import { prisma } from "../repositories/prismaContext";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import bcrypt from "bcryptjs";
+import { AuditService } from "./auditService";
 
 export interface UserCreationParams {
     username: string;
@@ -11,6 +12,8 @@ export interface UserCreationParams {
 
 @injectable()
 export class UserService {
+    constructor(@inject(AuditService) private auditService: AuditService) { }
+
     public async getAll(): Promise<User[]> {
         return prisma.user.findMany({
             where: {
@@ -28,22 +31,46 @@ export class UserService {
         });
     }
 
-    public async create(params: UserCreationParams): Promise<User> {
+    public async create(params: UserCreationParams, performedByUserId?: number, performedByUsername?: string): Promise<User> {
         const passwordHash = await bcrypt.hash(params.password || "password123", 10);
-        return prisma.user.create({
+        const user = await prisma.user.create({
             data: {
                 username: params.username,
                 passwordHash,
                 role: params.role
             }
         });
+
+        this.auditService.log({
+            entityType: "USER",
+            entityId: user.id,
+            action: "CREATE",
+            userId: performedByUserId,
+            username: performedByUsername,
+            newData: { id: user.id, username: user.username, role: user.role, status: user.status },
+        });
+
+        return user;
     }
 
-    public async delete(id: number): Promise<User> {
-        return prisma.user.update({
+    public async delete(id: number, performedByUserId?: number, performedByUsername?: string): Promise<User> {
+        const previous = await prisma.user.findUnique({ where: { id } });
+
+        const user = await prisma.user.update({
             where: { id },
             data: { status: UserStatus.DELETED }
         });
+
+        this.auditService.log({
+            entityType: "USER",
+            entityId: id,
+            action: "DELETE",
+            userId: performedByUserId,
+            username: performedByUsername,
+            previousData: previous ? { id: previous.id, username: previous.username, role: previous.role, status: previous.status } : null,
+        });
+
+        return user;
     }
 
     public async seedInitialUsers(): Promise<void> {

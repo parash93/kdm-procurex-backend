@@ -5,9 +5,12 @@ import {
     Route,
     Body,
     Path,
+    Request,
+    Security,
     SuccessResponse,
     Tags,
 } from "tsoa";
+import * as express from "express";
 import { inject, injectable } from "inversify";
 import { ApprovalService, ApprovalParams } from "../services/approvalService";
 import { Approval } from "@prisma/client";
@@ -29,10 +32,13 @@ export class ApprovalController extends Controller {
 
     @SuccessResponse("201", "Created")
     @Post()
+    @Security("jwt")
     public async submitApproval(
-        @Body() requestBody: ApprovalParams
+        @Body() requestBody: ApprovalParams,
+        @Request() request: express.Request
     ): Promise<Approval> {
         this.setStatus(201);
-        return this.approvalService.submitApproval(requestBody);
+        const user = (request as any).user;
+        return this.approvalService.submitApproval(requestBody, user?.id, user?.username);
     }
 }

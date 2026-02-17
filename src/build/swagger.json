@@ -1125,6 +1125,91 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"AuditLogResponse": {
+				"description": "DTO for API responses — avoids Prisma's `JsonValue` type that tsoa can't resolve",
+				"properties": {
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"entityType": {
+						"type": "string"
+					},
+					"entityId": {
+						"type": "number",
+						"format": "double"
+					},
+					"action": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"username": {
+						"type": "string",
+						"nullable": true
+					},
+					"previousData": {},
+					"newData": {},
+					"metadata": {},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"entityType",
+					"entityId",
+					"action",
+					"userId",
+					"username",
+					"previousData",
+					"newData",
+					"metadata",
+					"createdAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PaginatedResult_AuditLogResponse_": {
+				"description": "Shared pagination types used across all services.",
+				"properties": {
+					"data": {
+						"items": {
+							"$ref": "#/components/schemas/AuditLogResponse"
+						},
+						"type": "array"
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"page": {
+						"type": "number",
+						"format": "double"
+					},
+					"limit": {
+						"type": "number",
+						"format": "double"
+					},
+					"totalPages": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"data",
+					"total",
+					"page",
+					"limit",
+					"totalPages"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"DefaultSelection_Prisma._36_ApprovalPayload_": {
 				"properties": {
 					"decision": {
@@ -1501,7 +1586,11 @@
 				"tags": [
 					"Suppliers"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -1534,7 +1623,11 @@
 				"tags": [
 					"Suppliers"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -1589,7 +1682,11 @@
 				"tags": [
 					"Suppliers"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -1695,7 +1792,11 @@
 				"tags": [
 					"Product"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -1762,7 +1863,11 @@
 				"tags": [
 					"Product"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -1795,7 +1900,11 @@
 				"tags": [
 					"Product"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -1901,7 +2010,11 @@
 				"tags": [
 					"ProductCategory"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -1968,7 +2081,11 @@
 				"tags": [
 					"ProductCategory"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -2001,7 +2118,11 @@
 				"tags": [
 					"ProductCategory"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -2115,7 +2236,11 @@
 				"tags": [
 					"Purchase Orders"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -2182,7 +2307,11 @@
 				"tags": [
 					"Purchase Orders"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -2215,7 +2344,11 @@
 				"tags": [
 					"Purchase Orders"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -2490,7 +2623,11 @@
 				"tags": [
 					"Inventory"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -2626,7 +2763,11 @@
 				"tags": [
 					"Division"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -2693,7 +2834,11 @@
 				"tags": [
 					"Division"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -2726,7 +2871,11 @@
 				"tags": [
 					"Division"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -2947,6 +3096,139 @@
 				]
 			}
 		},
+		"/audit/paginated": {
+			"get": {
+				"operationId": "GetAuditLogs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaginatedResult_AuditLogResponse_"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get paginated audit logs (admin only)",
+				"tags": [
+					"Audit Logs"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 20,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "entityType",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "action",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "entityId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/audit/{entityType}/{entityId}": {
+			"get": {
+				"operationId": "GetEntityHistory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/AuditLogResponse"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get audit history for a specific entity",
+				"tags": [
+					"Audit Logs"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "entityType",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "entityId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/approvals/history/{poId}": {
 			"get": {
 				"operationId": "GetHistory",
@@ -3000,7 +3282,11 @@
 				"tags": [
 					"Approvals"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,

@@ -8,9 +8,12 @@ import {
     Body,
     Path,
     Query,
+    Request,
+    Security,
     SuccessResponse,
     Tags,
 } from "tsoa";
+import * as express from "express";
 import { inject, injectable } from "inversify";
 import { DivisionService, DivisionCreationParams } from "../services/divisionService";
 import { Division } from "@prisma/client";
@@ -47,25 +50,36 @@ export class DivisionController extends Controller {
 
     @SuccessResponse("201", "Created")
     @Post()
+    @Security("jwt")
     public async createDivision(
-        @Body() requestBody: DivisionCreationParams
+        @Body() requestBody: DivisionCreationParams,
+        @Request() request: express.Request
     ): Promise<Division> {
         this.setStatus(201);
-        return this.divisionService.create(requestBody);
+        const user = (request as any).user;
+        return this.divisionService.create(requestBody, user?.id, user?.username);
     }
 
     @Put("{id}")
+    @Security("jwt")
     public async updateDivision(
         @Path() id: number,
-        @Body() requestBody: Partial<DivisionCreationParams>
+        @Body() requestBody: Partial<DivisionCreationParams>,
+        @Request() request: express.Request
     ): Promise<Division> {
-        return this.divisionService.update(id, requestBody);
+        const user = (request as any).user;
+        return this.divisionService.update(id, requestBody, user?.id, user?.username);
     }
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteDivision(@Path() id: number): Promise<void> {
+    @Security("jwt")
+    public async deleteDivision(
+        @Path() id: number,
+        @Request() request: express.Request
+    ): Promise<void> {
         this.setStatus(204);
-        await this.divisionService.delete(id);
+        const user = (request as any).user;
+        await this.divisionService.delete(id, user?.id, user?.username);
     }
 }

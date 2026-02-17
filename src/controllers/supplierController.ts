@@ -7,10 +7,13 @@ import {
     Post,
     Put,
     Query,
+    Request,
     Route,
+    Security,
     SuccessResponse,
     Tags,
 } from "tsoa";
+import * as express from "express";
 import { inject, injectable } from "inversify";
 import { SupplierService, SupplierCreationParams } from "../services/supplierService";
 import { Supplier } from "@prisma/client";
@@ -47,25 +50,36 @@ export class SupplierController extends Controller {
 
     @SuccessResponse("201", "Created")
     @Post()
+    @Security("jwt")
     public async createSupplier(
-        @Body() requestBody: SupplierCreationParams
+        @Body() requestBody: SupplierCreationParams,
+        @Request() request: express.Request
     ): Promise<Supplier> {
         this.setStatus(201);
-        return this.supplierService.create(requestBody);
+        const user = (request as any).user;
+        return this.supplierService.create(requestBody, user?.id, user?.username);
     }
 
     @Put("{id}")
+    @Security("jwt")
     public async updateSupplier(
         @Path() id: number,
-        @Body() requestBody: Partial<SupplierCreationParams>
+        @Body() requestBody: Partial<SupplierCreationParams>,
+        @Request() request: express.Request
     ): Promise<Supplier> {
-        return this.supplierService.update(id, requestBody);
+        const user = (request as any).user;
+        return this.supplierService.update(id, requestBody, user?.id, user?.username);
     }
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteSupplier(@Path() id: number): Promise<void> {
-        await this.supplierService.delete(id);
+    @Security("jwt")
+    public async deleteSupplier(
+        @Path() id: number,
+        @Request() request: express.Request
+    ): Promise<void> {
+        const user = (request as any).user;
+        await this.supplierService.delete(id, user?.id, user?.username);
         this.setStatus(204);
     }
 }

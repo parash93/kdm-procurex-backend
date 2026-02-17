@@ -1,7 +1,8 @@
 import { Product, EntityStatus, Prisma } from "@prisma/client";
 import { prisma } from "../repositories/prismaContext";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { PaginatedResult } from "../types/pagination";
+import { AuditService } from "./auditService";
 
 export interface ProductCreationParams {
     name: string;
@@ -13,6 +14,8 @@ export interface ProductCreationParams {
 
 @injectable()
 export class ProductService {
+    constructor(@inject(AuditService) private auditService: AuditService) { }
+
     public async getAll(): Promise<Product[]> {
         return prisma.product.findMany({
             where: {
@@ -68,7 +71,7 @@ export class ProductService {
         });
     }
 
-    public async create(params: ProductCreationParams): Promise<Product> {
+    public async create(params: ProductCreationParams, userId?: number, username?: string): Promise<Product> {
         const product = await prisma.product.create({
             data: {
                 name: params.name,
@@ -88,11 +91,22 @@ export class ProductService {
             }
         });
 
+        this.auditService.log({
+            entityType: "PRODUCT",
+            entityId: product.id,
+            action: "CREATE",
+            userId,
+            username,
+            newData: product,
+        });
+
         return product;
     }
 
-    public async update(id: number, params: Partial<ProductCreationParams>): Promise<Product> {
-        return prisma.product.update({
+    public async update(id: number, params: Partial<ProductCreationParams>, userId?: number, username?: string): Promise<Product> {
+        const previous = await prisma.product.findUnique({ where: { id }, include: { category: true } });
+
+        const product = await prisma.product.update({
             where: { id },
             data: {
                 name: params.name,
@@ -103,13 +117,38 @@ export class ProductService {
             },
             include: { category: true }
         });
+
+        this.auditService.log({
+            entityType: "PRODUCT",
+            entityId: id,
+            action: "UPDATE",
+            userId,
+            username,
+            previousData: previous,
+            newData: product,
+        });
+
+        return product;
     }
 
-    public async delete(id: number): Promise<Product> {
-        return prisma.product.update({
+    public async delete(id: number, userId?: number, username?: string): Promise<Product> {
+        const previous = await prisma.product.findUnique({ where: { id }, include: { category: true } });
+
+        const product = await prisma.product.update({
             where: { id },
             data: { status: EntityStatus.DELETED },
             include: { category: true }
         });
+
+        this.auditService.log({
+            entityType: "PRODUCT",
+            entityId: id,
+            action: "DELETE",
+            userId,
+            username,
+            previousData: previous,
+        });
+
+        return product;
     }
 }

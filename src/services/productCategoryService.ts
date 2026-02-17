@@ -1,7 +1,8 @@
 import { ProductCategory, EntityStatus, Prisma } from "@prisma/client";
 import { prisma } from "../repositories/prismaContext";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { PaginatedResult } from "../types/pagination";
+import { AuditService } from "./auditService";
 
 export interface ProductCategoryCreationParams {
     name: string;
@@ -10,6 +11,8 @@ export interface ProductCategoryCreationParams {
 
 @injectable()
 export class ProductCategoryService {
+    constructor(@inject(AuditService) private auditService: AuditService) { }
+
     public async getAll(): Promise<ProductCategory[]> {
         return prisma.productCategory.findMany({
             where: {
@@ -54,26 +57,64 @@ export class ProductCategoryService {
         });
     }
 
-    public async create(params: ProductCategoryCreationParams): Promise<ProductCategory> {
-        return prisma.productCategory.create({
+    public async create(params: ProductCategoryCreationParams, userId?: number, username?: string): Promise<ProductCategory> {
+        const category = await prisma.productCategory.create({
             data: {
                 ...params,
                 status: params.status || EntityStatus.ACTIVE
             }
         });
+
+        this.auditService.log({
+            entityType: "PRODUCT_CATEGORY",
+            entityId: category.id,
+            action: "CREATE",
+            userId,
+            username,
+            newData: category,
+        });
+
+        return category;
     }
 
-    public async update(id: number, params: Partial<ProductCategoryCreationParams>): Promise<ProductCategory> {
-        return prisma.productCategory.update({
+    public async update(id: number, params: Partial<ProductCategoryCreationParams>, userId?: number, username?: string): Promise<ProductCategory> {
+        const previous = await prisma.productCategory.findUnique({ where: { id } });
+
+        const category = await prisma.productCategory.update({
             where: { id },
             data: params
         });
+
+        this.auditService.log({
+            entityType: "PRODUCT_CATEGORY",
+            entityId: id,
+            action: "UPDATE",
+            userId,
+            username,
+            previousData: previous,
+            newData: category,
+        });
+
+        return category;
     }
 
-    public async delete(id: number): Promise<ProductCategory> {
-        return prisma.productCategory.update({
+    public async delete(id: number, userId?: number, username?: string): Promise<ProductCategory> {
+        const previous = await prisma.productCategory.findUnique({ where: { id } });
+
+        const category = await prisma.productCategory.update({
             where: { id },
             data: { status: EntityStatus.DELETED }
         });
+
+        this.auditService.log({
+            entityType: "PRODUCT_CATEGORY",
+            entityId: id,
+            action: "DELETE",
+            userId,
+            username,
+            previousData: previous,
+        });
+
+        return category;
     }
 }

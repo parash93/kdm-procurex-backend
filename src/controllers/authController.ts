@@ -1,4 +1,5 @@
-import { Route, Post, Body, Controller, Tags, Get, Security, Delete, Path } from "tsoa";
+import { Route, Post, Body, Controller, Tags, Get, Security, Delete, Path, Request } from "tsoa";
+import * as express from "express";
 import { injectable } from "inversify";
 import { AuthService, LoginParams, AuthResponse, RegisterParams } from "../services/authService";
 import { UserService } from "../services/userService";
@@ -22,7 +23,11 @@ export class AuthController extends Controller {
 
     @Post("register")
     @Security("jwt", ["ADMIN"])
-    public async register(@Body() body: RegisterParams): Promise<User> {
+    public async register(
+        @Body() body: RegisterParams,
+        @Request() request: express.Request
+    ): Promise<User> {
+        const user = (request as any).user;
         return this.authService.register(body);
     }
 
@@ -34,7 +39,11 @@ export class AuthController extends Controller {
 
     @Delete("users/{id}")
     @Security("jwt", ["ADMIN"])
-    public async deleteUser(@Path() id: number): Promise<any> {
-        return this.userService.delete(id);
+    public async deleteUser(
+        @Path() id: number,
+        @Request() request: express.Request
+    ): Promise<any> {
+        const user = (request as any).user;
+        return this.userService.delete(id, user?.id, user?.username);
     }
 }

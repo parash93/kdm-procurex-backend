@@ -7,10 +7,13 @@ import {
     Post,
     Put,
     Query,
+    Request,
     Route,
+    Security,
     SuccessResponse,
     Tags,
 } from "tsoa";
+import * as express from "express";
 import { inject, injectable } from "inversify";
 import { PurchaseOrderService, CreatePOParams } from "../services/poService";
 import { PurchaseOrder, POStatus } from "@prisma/client";
@@ -48,25 +51,36 @@ export class PurchaseOrderController extends Controller {
 
     @SuccessResponse("201", "Created")
     @Post()
+    @Security("jwt")
     public async createOrder(
-        @Body() requestBody: CreatePOParams
+        @Body() requestBody: CreatePOParams,
+        @Request() request: express.Request
     ): Promise<PurchaseOrder> {
         this.setStatus(201);
-        return this.poService.create(requestBody);
+        const user = (request as any).user;
+        return this.poService.create(requestBody, user?.id, user?.username);
     }
 
     @Put("{id}")
+    @Security("jwt")
     public async updateOrder(
         @Path() id: number,
-        @Body() requestBody: Partial<CreatePOParams & { status: POStatus }>
+        @Body() requestBody: Partial<CreatePOParams & { status: POStatus }>,
+        @Request() request: express.Request
     ): Promise<PurchaseOrder> {
-        return this.poService.update(id, requestBody);
+        const user = (request as any).user;
+        return this.poService.update(id, requestBody, user?.id, user?.username);
     }
 
     @SuccessResponse("204", "Deleted")
     @Delete("{id}")
-    public async deleteOrder(@Path() id: number): Promise<void> {
-        await this.poService.delete(id);
+    @Security("jwt")
+    public async deleteOrder(
+        @Path() id: number,
+        @Request() request: express.Request
+    ): Promise<void> {
+        const user = (request as any).user;
+        await this.poService.delete(id, user?.id, user?.username);
         this.setStatus(204);
     }
 }

@@ -1,6 +1,7 @@
 import { StageUpdate, POStatus } from "@prisma/client";
 import { prisma } from "../repositories/prismaContext";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
+import { AuditService } from "./auditService";
 
 export interface StageUpdateParams {
     poId: number;
@@ -13,7 +14,9 @@ export interface StageUpdateParams {
 
 @injectable()
 export class TrackingService {
-    public async addStageUpdate(params: StageUpdateParams): Promise<StageUpdate> {
+    constructor(@inject(AuditService) private auditService: AuditService) { }
+
+    public async addStageUpdate(params: StageUpdateParams, userId?: number, username?: string): Promise<StageUpdate> {
         return prisma.$transaction(async (tx) => {
             const update = await tx.stageUpdate.create({
                 data: {
@@ -24,6 +27,9 @@ export class TrackingService {
                     updatedBy: params.updatedBy
                 }
             });
+
+            let previousStatus: string | undefined;
+            let newStatus: string | undefined;
 
             // Optionally sync PO status if stage matches an enum value
             if (params.updatePOStatus) {
@@ -37,57 +43,8 @@ export class TrackingService {
 
                     if (!currentPO) throw new Error("Purchase Order not found");
 
-                    // // Handle Inventory Subtraction if status changing to DELIVERED
-                    // if (statusValue === POStatus.DELIVERED && currentPO.status !== POStatus.DELIVERED) {
-                    //     for (const item of currentPO.items) {
-                    //         if (item.productId) {
-                    //             const inv = await tx.inventory.findUnique({
-                    //                 where: { productId: item.productId }
-                    //             });
-                    //             if (inv) {
-                    //                 await tx.inventory.update({
-                    //                     where: { id: inv.id },
-                    //                     data: { quantity: { decrement: item.quantity } }
-                    //                 });
-                    //                 await tx.inventoryHistory.create({
-                    //                     data: {
-                    //                         inventoryId: inv.id,
-                    //                         type: 'SUBTRACT',
-                    //                         quantity: item.quantity,
-                    //                         reason: `PO Delivered: ${currentPO.poNumber}`,
-                    //                         updatedBy: params.updatedBy || 0
-                    //                     }
-                    //                 });
-                    //             }
-                    //         }
-                    //     }
-                    // }
-
-                    // // Handle Inventory Addition if status changing to RETURNED from DELIVERED
-                    // if (statusValue === POStatus.RETURNED && currentPO.status === POStatus.DELIVERED) {
-                    //     for (const item of currentPO.items) {
-                    //         if (item.productId) {
-                    //             const inv = await tx.inventory.findUnique({
-                    //                 where: { productId: item.productId }
-                    //             });
-                    //             if (inv) {
-                    //                 await tx.inventory.update({
-                    //                     where: { id: inv.id },
-                    //                     data: { quantity: { increment: item.quantity } }
-                    //                 });
-                    //                 await tx.inventoryHistory.create({
-                    //                     data: {
-                    //                         inventoryId: inv.id,
-                    //                         type: 'ADD',
-                    //                         quantity: item.quantity,
-                    //                         reason: `PO Returned: ${currentPO.poNumber}`,
-                    //                         updatedBy: params.updatedBy || 0
-                    //                     }
-                    //                 });
-                    //             }
-                    //         }
-                    //     }
-                    // }
+                    previousStatus = currentPO.status;
+                    newStatus = statusValue;
 
                     // Update PO status
                     await tx.purchaseOrder.update({
@@ -96,6 +53,27 @@ export class TrackingService {
                     });
                 }
             }
+
+            // Get PO number for metadata
+            const po = await tx.purchaseOrder.findUnique({ where: { id: params.poId } });
+
+            // Audit log for stage update
+            this.auditService.log({
+                entityType: "ORDER",
+                entityId: params.poId,
+                action: "STAGE_UPDATE",
+                userId: userId || params.updatedBy,
+                username,
+                newData: update,
+                metadata: {
+                    poNumber: po?.poNumber,
+                    stage: params.stage,
+                    notes: params.notes,
+                    previousStatus,
+                    newStatus,
+                    statusUpdated: !!params.updatePOStatus,
+                },
+            });
 
             return update;
         }, {

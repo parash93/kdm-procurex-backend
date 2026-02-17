@@ -1,8 +1,9 @@
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { prisma } from "../repositories/prismaContext";
 import { User, Role, UserStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { AuditService } from "./auditService";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-procurex-key";
 
@@ -24,6 +25,8 @@ export interface RegisterParams {
 
 @injectable()
 export class AuthService {
+    constructor(@inject(AuditService) private auditService: AuditService) { }
+
     public async login(params: LoginParams): Promise<AuthResponse> {
         const user = await prisma.user.findUnique({
             where: { username: params.username }
@@ -54,6 +57,17 @@ export class AuthService {
         );
 
         const { passwordHash, ...userWithoutPassword } = user;
+
+        // Audit log for successful login
+        this.auditService.log({
+            entityType: "USER",
+            entityId: user.id,
+            action: "LOGIN",
+            userId: user.id,
+            username: user.username,
+            metadata: { role: user.role },
+        });
+
         return {
             user: userWithoutPassword,
             token

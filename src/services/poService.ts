@@ -1,8 +1,9 @@
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { prisma } from "../repositories/prismaContext";
 import { PurchaseOrder, POStatus, Prisma } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { PaginatedResult } from "../types/pagination";
+import { AuditService } from "./auditService";
 
 export interface CreatePOParams {
     supplierId: number;
@@ -23,12 +24,14 @@ export interface CreatePOParams {
 
 @injectable()
 export class PurchaseOrderService {
-    public async create(params: CreatePOParams): Promise<PurchaseOrder> {
+    constructor(@inject(AuditService) private auditService: AuditService) { }
+
+    public async create(params: CreatePOParams, userId?: number, username?: string): Promise<PurchaseOrder> {
         const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
         const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
         const poNumber = `PO-${dateStr}-${randomStr}`;
 
-        return prisma.purchaseOrder.create({
+        const po = await prisma.purchaseOrder.create({
             data: {
                 poNumber,
                 supplierId: params.supplierId,
@@ -55,6 +58,18 @@ export class PurchaseOrderService {
                 division: true
             }
         });
+
+        this.auditService.log({
+            entityType: "ORDER",
+            entityId: po.id,
+            action: "CREATE",
+            userId,
+            username,
+            newData: po,
+            metadata: { poNumber },
+        });
+
+        return po;
     }
 
     public async getAll(): Promise<PurchaseOrder[]> {
@@ -145,7 +160,7 @@ export class PurchaseOrderService {
         });
     }
 
-    public async update(id: number, params: Partial<CreatePOParams & { status: POStatus, updatedByUsername?: number }>): Promise<PurchaseOrder> {
+    public async update(id: number, params: Partial<CreatePOParams & { status: POStatus, updatedByUsername?: number }>, userId?: number, username?: string): Promise<PurchaseOrder> {
         const { items, updatedByUsername, ...headerData } = params;
 
         return prisma.$transaction(async (tx) => {
@@ -156,53 +171,15 @@ export class PurchaseOrderService {
 
             if (!currentPO) throw new Error("PO not found");
 
-            // // Handle Inventory Subtraction if status marked as DELIVERED
-            // if (headerData.status === POStatus.DELIVERED && currentPO.status !== POStatus.DELIVERED) {
-            //     for (const item of currentPO.items) {
-            //         if (item.productId) {
-            //             const inv = await tx.inventory.findUnique({ where: { productId: item.productId } });
-            //             if (inv) {
-            //                 await tx.inventory.update({
-            //                     where: { id: inv.id },
-            //                     data: { quantity: { decrement: item.quantity } }
-            //                 });
-            //                 await tx.inventoryHistory.create({
-            //                     data: {
-            //                         inventoryId: inv.id,
-            //                         type: 'SUBTRACT',
-            //                         quantity: item.quantity,
-            //                         reason: `PO Delivered: ${currentPO.poNumber}`,
-            //                         updatedBy: updatedByUsername || 0
-            //                     }
-            //                 });
-            //             }
-            //         }
-            //     }
-            // }
+            // Determine action type for audit
+            let auditAction = "UPDATE";
+            if (headerData.status && headerData.status !== currentPO.status) {
+                auditAction = "STATUS_CHANGE";
 
-            // // Handle Inventory Addition if status marked as RETURNED (reversing delivery)
-            // if (headerData.status === POStatus.RETURNED && currentPO.status === POStatus.DELIVERED) {
-            //     for (const item of currentPO.items) {
-            //         if (item.productId) {
-            //             const inv = await tx.inventory.findUnique({ where: { productId: item.productId } });
-            //             if (inv) {
-            //                 await tx.inventory.update({
-            //                     where: { id: inv.id },
-            //                     data: { quantity: { increment: item.quantity } }
-            //                 });
-            //                 await tx.inventoryHistory.create({
-            //                     data: {
-            //                         inventoryId: inv.id,
-            //                         type: 'ADD',
-            //                         quantity: item.quantity,
-            //                         reason: `PO Returned: ${currentPO.poNumber}`,
-            //                         updatedBy: updatedByUsername || 0
-            //                     }
-            //                 });
-            //             }
-            //         }
-            //     }
-            // }
+                if (headerData.status === POStatus.PENDING_L1) {
+                    auditAction = "SUBMIT";
+                }
+            }
 
             // Update header
             const updatedPO = await tx.purchaseOrder.update({
@@ -238,7 +215,7 @@ export class PurchaseOrderService {
                 }
             }
 
-            return tx.purchaseOrder.findUniqueOrThrow({
+            const finalPO = await tx.purchaseOrder.findUniqueOrThrow({
                 where: { id },
                 include: {
                     items: true,
@@ -246,13 +223,46 @@ export class PurchaseOrderService {
                     division: true
                 }
             });
+
+            // Fire-and-forget audit log (outside transaction)
+            this.auditService.log({
+                entityType: "ORDER",
+                entityId: id,
+                action: auditAction,
+                userId,
+                username,
+                previousData: currentPO,
+                newData: finalPO,
+                metadata: {
+                    poNumber: currentPO.poNumber,
+                    previousStatus: currentPO.status,
+                    newStatus: headerData.status || currentPO.status,
+                },
+            });
+
+            return finalPO;
         });
     }
 
-    public async delete(id: number): Promise<void> {
+    public async delete(id: number, userId?: number, username?: string): Promise<void> {
+        const previous = await prisma.purchaseOrder.findUnique({
+            where: { id },
+            include: { items: true, supplier: true, division: true }
+        });
+
         await prisma.purchaseOrder.update({
             where: { id },
             data: { status: POStatus.DELETED }
+        });
+
+        this.auditService.log({
+            entityType: "ORDER",
+            entityId: id,
+            action: "DELETE",
+            userId,
+            username,
+            previousData: previous,
+            metadata: { poNumber: previous?.poNumber },
         });
     }
 }

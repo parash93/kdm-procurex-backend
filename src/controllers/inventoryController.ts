@@ -5,10 +5,13 @@ import {
     Path,
     Post,
     Route,
+    Request,
+    Security,
     SuccessResponse,
     Tags,
     Query,
 } from "tsoa";
+import * as express from "express";
 import { inject, injectable } from "inversify";
 import { InventoryService } from "../services/inventoryService";
 
@@ -42,15 +45,19 @@ export class InventoryController extends Controller {
 
     @Post("update")
     @SuccessResponse("200", "Updated")
+    @Security("jwt")
     public async updateStock(
-        @Body() requestBody: UpdateStockParams
+        @Body() requestBody: UpdateStockParams,
+        @Request() request: express.Request
     ) {
+        const user = (request as any).user;
         return this.inventoryService.updateStock(
             requestBody.productId,
             requestBody.quantity,
             requestBody.type,
             requestBody.reason,
-            requestBody.updatedBy
+            requestBody.updatedBy,
+            user?.username
         );
     }
 }

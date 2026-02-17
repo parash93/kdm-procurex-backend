@@ -26,6 +26,8 @@ import { DashboardController } from './../controllers/dashboardController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AuthController } from './../controllers/authController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { AuditController } from './../controllers/auditController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ApprovalController } from './../controllers/approvalController';
 import { expressAuthentication } from './../middleware/authentication';
 // @ts-ignore - no great way to install types from subpackage
@@ -396,6 +398,35 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AuditLogResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"double","required":true},
+            "entityType": {"dataType":"string","required":true},
+            "entityId": {"dataType":"double","required":true},
+            "action": {"dataType":"string","required":true},
+            "userId": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
+            "username": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "previousData": {"dataType":"any","required":true},
+            "newData": {"dataType":"any","required":true},
+            "metadata": {"dataType":"any","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PaginatedResult_AuditLogResponse_": {
+        "dataType": "refObject",
+        "properties": {
+            "data": {"dataType":"array","array":{"dataType":"refObject","ref":"AuditLogResponse"},"required":true},
+            "total": {"dataType":"double","required":true},
+            "page": {"dataType":"double","required":true},
+            "limit": {"dataType":"double","required":true},
+            "totalPages": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "DefaultSelection_Prisma._36_ApprovalPayload_": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"decision":{"dataType":"string","required":true},"approverId":{"dataType":"double","required":true},"level":{"dataType":"double","required":true},"remarks":{"dataType":"string","required":true},"timestamp":{"dataType":"datetime","required":true},"poId":{"dataType":"double","required":true},"id":{"dataType":"double","required":true}},"validators":{}},
@@ -753,8 +784,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsSupplierController_createSupplier: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"SupplierCreationParams"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.post('/suppliers',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(SupplierController)),
             ...(fetchMiddlewares<RequestHandler>(SupplierController.prototype.createSupplier)),
 
@@ -789,8 +822,10 @@ export function RegisterRoutes(app: Router) {
         const argsSupplierController_updateSupplier: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"Partial_SupplierCreationParams_"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.put('/suppliers/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(SupplierController)),
             ...(fetchMiddlewares<RequestHandler>(SupplierController.prototype.updateSupplier)),
 
@@ -824,8 +859,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsSupplierController_deleteSupplier: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.delete('/suppliers/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(SupplierController)),
             ...(fetchMiddlewares<RequestHandler>(SupplierController.prototype.deleteSupplier)),
 
@@ -965,8 +1002,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsProductController_createProduct: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ProductCreationParams"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.post('/products',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.createProduct)),
 
@@ -1001,8 +1040,10 @@ export function RegisterRoutes(app: Router) {
         const argsProductController_updateProduct: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"Partial_ProductCreationParams_"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.put('/products/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.updateProduct)),
 
@@ -1036,8 +1077,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsProductController_deleteProduct: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.delete('/products/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductController)),
             ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.deleteProduct)),
 
@@ -1177,8 +1220,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsProductCategoryController_createCategory: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ProductCategoryCreationParams"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.post('/product-categories',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductCategoryController)),
             ...(fetchMiddlewares<RequestHandler>(ProductCategoryController.prototype.createCategory)),
 
@@ -1213,8 +1258,10 @@ export function RegisterRoutes(app: Router) {
         const argsProductCategoryController_updateCategory: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"Partial_ProductCategoryCreationParams_"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.put('/product-categories/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductCategoryController)),
             ...(fetchMiddlewares<RequestHandler>(ProductCategoryController.prototype.updateCategory)),
 
@@ -1248,8 +1295,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsProductCategoryController_deleteCategory: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.delete('/product-categories/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ProductCategoryController)),
             ...(fetchMiddlewares<RequestHandler>(ProductCategoryController.prototype.deleteCategory)),
 
@@ -1390,8 +1439,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsPurchaseOrderController_createOrder: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreatePOParams"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.post('/orders',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(PurchaseOrderController)),
             ...(fetchMiddlewares<RequestHandler>(PurchaseOrderController.prototype.createOrder)),
 
@@ -1426,8 +1477,10 @@ export function RegisterRoutes(app: Router) {
         const argsPurchaseOrderController_updateOrder: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"Partial_CreatePOParams-and-_status-POStatus__"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.put('/orders/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(PurchaseOrderController)),
             ...(fetchMiddlewares<RequestHandler>(PurchaseOrderController.prototype.updateOrder)),
 
@@ -1461,8 +1514,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsPurchaseOrderController_deleteOrder: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.delete('/orders/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(PurchaseOrderController)),
             ...(fetchMiddlewares<RequestHandler>(PurchaseOrderController.prototype.deleteOrder)),
 
@@ -1565,8 +1620,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsInventoryController_updateStock: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateStockParams"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.post('/inventory/update',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(InventoryController)),
             ...(fetchMiddlewares<RequestHandler>(InventoryController.prototype.updateStock)),
 
@@ -1740,8 +1797,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsDivisionController_createDivision: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"DivisionCreationParams"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.post('/divisions',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(DivisionController)),
             ...(fetchMiddlewares<RequestHandler>(DivisionController.prototype.createDivision)),
 
@@ -1776,8 +1835,10 @@ export function RegisterRoutes(app: Router) {
         const argsDivisionController_updateDivision: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"Partial_DivisionCreationParams_"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.put('/divisions/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(DivisionController)),
             ...(fetchMiddlewares<RequestHandler>(DivisionController.prototype.updateDivision)),
 
@@ -1811,8 +1872,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsDivisionController_deleteDivision: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.delete('/divisions/:id',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(DivisionController)),
             ...(fetchMiddlewares<RequestHandler>(DivisionController.prototype.deleteDivision)),
 
@@ -1983,6 +2046,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_register: Record<string, TsoaRoute.ParameterSchema> = {
                 body: {"in":"body","name":"body","required":true,"ref":"RegisterParams"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.post('/auth/register',
             authenticateMiddleware([{"jwt":["ADMIN"]}]),
@@ -2054,6 +2118,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsAuthController_deleteUser: Record<string, TsoaRoute.ParameterSchema> = {
                 id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.delete('/auth/users/:id',
             authenticateMiddleware([{"jwt":["ADMIN"]}]),
@@ -2077,6 +2142,84 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'deleteUser',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuditController_getAuditLogs: Record<string, TsoaRoute.ParameterSchema> = {
+                page: {"default":1,"in":"query","name":"page","dataType":"double"},
+                limit: {"default":20,"in":"query","name":"limit","dataType":"double"},
+                search: {"in":"query","name":"search","dataType":"string"},
+                entityType: {"in":"query","name":"entityType","dataType":"string"},
+                action: {"in":"query","name":"action","dataType":"string"},
+                entityId: {"in":"query","name":"entityId","dataType":"double"},
+        };
+        app.get('/audit/paginated',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(AuditController)),
+            ...(fetchMiddlewares<RequestHandler>(AuditController.prototype.getAuditLogs)),
+
+            async function AuditController_getAuditLogs(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuditController_getAuditLogs, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AuditController>(AuditController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getAuditLogs',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAuditController_getEntityHistory: Record<string, TsoaRoute.ParameterSchema> = {
+                entityType: {"in":"path","name":"entityType","required":true,"dataType":"string"},
+                entityId: {"in":"path","name":"entityId","required":true,"dataType":"double"},
+        };
+        app.get('/audit/:entityType/:entityId',
+            authenticateMiddleware([{"jwt":["ADMIN"]}]),
+            ...(fetchMiddlewares<RequestHandler>(AuditController)),
+            ...(fetchMiddlewares<RequestHandler>(AuditController.prototype.getEntityHistory)),
+
+            async function AuditController_getEntityHistory(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAuditController_getEntityHistory, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AuditController>(AuditController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getEntityHistory',
                 controller,
                 response,
                 next,
@@ -2125,8 +2268,10 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsApprovalController_submitApproval: Record<string, TsoaRoute.ParameterSchema> = {
                 requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ApprovalParams"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
         };
         app.post('/approvals',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ApprovalController)),
             ...(fetchMiddlewares<RequestHandler>(ApprovalController.prototype.submitApproval)),
 

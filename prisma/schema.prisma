@@ -168,6 +168,24 @@ model Approval {
   @@index([approverId])
 }
 
+model AuditLog {
+  id           Int      @id @default(autoincrement())
+  entityType   String   // SUPPLIER, ORDER, DIVISION, PRODUCT_CATEGORY, PRODUCT, INVENTORY, USER
+  entityId     Int      // ID of the entity acted upon
+  action       String   // CREATE, UPDATE, DELETE, APPROVE, REJECT, STATUS_CHANGE, SUBMIT, STAGE_UPDATE, LOGIN, STOCK_UPDATE
+  userId       Int?     // Who performed the action (null for system actions)
+  username     String?  // Denormalized for quick display
+  previousData Json?    // Snapshot before the change
+  newData      Json?    // Snapshot after the change
+  metadata     Json?    // Extra context (e.g. remarks, IP, PO number)
+  createdAt    DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([action])
+}
+
 enum Role {
   ADMIN
   OPERATIONS
