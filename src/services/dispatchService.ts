@@ -203,31 +203,21 @@ export class DispatchService {
                 }
             });
 
-            /* =====================================================
-               1️⃣ DISPATCHED QUANTITY LOGIC (PO Tracking)
-               ===================================================== */
+            // 1. DISPATCHED QUANTITY LOGIC (PO Tracking)
+            // Note: dispatchedQuantity is incremented during createDispatch (DRAFT)
+            // We only need to handle REVERSALS here.
 
-            // ENTERING Delivered → increment dispatchedQuantity
-            if (!wasDelivered && isDelivered) {
-                for (const item of dispatch.items) {
-                    await tx.purchaseOrderItem.update({
-                        where: { id: item.poItemId },
-                        data: {
-                            dispatchedQuantity: { increment: item.quantity }
-                        }
-                    });
-                }
-            }
-
-            // EXITING Delivered → decrement dispatchedQuantity
-            if (wasDelivered && (isReturned || isCancelled)) {
-                for (const item of dispatch.items) {
-                    await tx.purchaseOrderItem.update({
-                        where: { id: item.poItemId },
-                        data: {
-                            dispatchedQuantity: { decrement: item.quantity }
-                        }
-                    });
+            // EXITING any active state to Returned/Cancelled → decrement dispatchedQuantity
+            if (isReturned || isCancelled) {
+                if (previousStatus !== DispatchStatus.RETURNED) { // Don't reverse twice if already returned
+                    for (const item of dispatch.items) {
+                        await tx.purchaseOrderItem.update({
+                            where: { id: item.poItemId },
+                            data: {
+                                dispatchedQuantity: { decrement: item.quantity }
+                            }
+                        });
+                    }
                 }
             }
 
