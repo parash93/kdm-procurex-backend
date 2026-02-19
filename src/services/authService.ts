@@ -15,6 +15,12 @@ export interface LoginParams {
 export interface AuthResponse {
     user: Omit<User, 'passwordHash'>;
     token: string;
+    expiresAt: number; // Unix timestamp (ms)
+}
+
+export interface RefreshResponse {
+    token: string;
+    expiresAt: number;
 }
 
 export interface RegisterParams {
@@ -50,10 +56,14 @@ export class AuthService {
             throw new Error("Invalid email or password");
         }
 
+        const TOKEN_TTL = '3d';
+        const TOKEN_TTL_MS = 3 * 24 * 60 * 60 * 1000;
+        const expiresAt = Date.now() + TOKEN_TTL_MS;
+
         const token = jwt.sign(
             { id: user.id, username: user.username, role: user.role },
             JWT_SECRET,
-            { expiresIn: '8h' }
+            { expiresIn: TOKEN_TTL }
         );
 
         const { passwordHash, ...userWithoutPassword } = user;
@@ -70,7 +80,8 @@ export class AuthService {
 
         return {
             user: userWithoutPassword,
-            token
+            token,
+            expiresAt
         };
     }
 
@@ -91,5 +102,26 @@ export class AuthService {
         } catch (error) {
             return null;
         }
+    }
+
+    /**
+     * Sliding session: if the existing token is still valid, issue a fresh 3-day token.
+     * Returns null if the token is already expired or invalid.
+     */
+    public async refreshToken(token: string): Promise<RefreshResponse | null> {
+        const decoded = await this.verifyToken(token);
+        if (!decoded) return null;
+
+        const TOKEN_TTL = '3d';
+        const TOKEN_TTL_MS = 3 * 24 * 60 * 60 * 1000;
+        const expiresAt = Date.now() + TOKEN_TTL_MS;
+
+        const newToken = jwt.sign(
+            { id: decoded.id, username: decoded.username, role: decoded.role },
+            JWT_SECRET,
+            { expiresIn: TOKEN_TTL }
+        );
+
+        return { token: newToken, expiresAt };
     }
 }

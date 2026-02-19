@@ -1152,11 +1152,16 @@
 					},
 					"token": {
 						"type": "string"
+					},
+					"expiresAt": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
 					"user",
-					"token"
+					"token",
+					"expiresAt"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1172,6 +1177,23 @@
 				},
 				"required": [
 					"username"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RefreshResponse": {
+				"properties": {
+					"token": {
+						"type": "string"
+					},
+					"expiresAt": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"token",
+					"expiresAt"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -3174,6 +3196,33 @@
 						}
 					}
 				}
+			}
+		},
+		"/auth/refresh": {
+			"post": {
+				"operationId": "Refresh",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RefreshResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Silently refreshes a still-valid JWT, extending the session by 3 days.\nCall this proactively (e.g. when token has < 25% lifetime left).\nReturns 401 if the token is already expired.",
+				"tags": [
+					"Authentication"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/auth/register": {
