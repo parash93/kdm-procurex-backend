@@ -54,7 +54,11 @@ export class DispatchService {
                         poItemId: item.poItemId,
                         dispatch: {
                             status: {
-                                notIn: [DispatchStatus.CANCELLED, DispatchStatus.RETURNED]
+                                notIn: [
+                                    DispatchStatus.CANCELLED,
+                                    DispatchStatus.RETURNED,
+                                    DispatchStatus.DELETED
+                                ]
                             }
                         }
                     },
