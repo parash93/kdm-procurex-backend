@@ -18,7 +18,7 @@ export interface CreateDispatchParams {
 export class DispatchService {
 
     public async createDispatch(params: CreateDispatchParams): Promise<Dispatch> {
-        // Validation: Check if items belong to supplier
+        // Validation: Check if items belong to supplier (via product.supplierId)
         // Check if quantities are valid (<= remaining PO quantity)
 
         // Transaction to create Dispatch and Items
@@ -27,19 +27,27 @@ export class DispatchService {
             for (const item of params.items) {
                 const poItem = await tx.purchaseOrderItem.findUnique({
                     where: { id: item.poItemId },
-                    include: { purchaseOrder: true }
+                    include: {
+                        purchaseOrder: true,
+                        product: true
+                    }
                 });
 
                 if (!poItem) {
                     throw new Error(`PO Item not found: ${item.poItemId}`);
                 }
 
-                if (poItem.purchaseOrder.supplierId !== params.supplierId) {
+                // Validate against product's supplier, not PO's root supplier
+                const itemSupplierId = poItem.product?.supplierId;
+                if (itemSupplierId && itemSupplierId !== params.supplierId) {
+                    throw new Error(`PO Item ${item.poItemId} product belongs to a different supplier`);
+                }
+                // fallback: if product has no supplier set, check PO root supplier
+                if (!itemSupplierId && poItem.purchaseOrder.supplierId !== params.supplierId) {
                     throw new Error(`PO Item ${item.poItemId} does not belong to supplier ${params.supplierId}`);
                 }
 
                 // Calculate remaining quantity
-                // We need to sum up all EXISTING dispatch items for this poItem
                 // Exclude CANCELLED and RETURNED dispatches from this count
                 const dispatchedSum = await tx.dispatchItem.aggregate({
                     where: {
@@ -103,8 +111,18 @@ export class DispatchService {
         });
     }
 
-    public async getDispatches(page: number, limit: number, search?: string): Promise<{ data: Dispatch[], total: number }> {
+    public async getDispatches(page: number, limit: number, search?: string, divisionId?: number): Promise<{ data: Dispatch[], total: number }> {
         const where: Prisma.DispatchWhereInput = {
+            NOT: { status: DispatchStatus.DELETED },
+            ...(divisionId && {
+                items: {
+                    some: {
+                        poItem: {
+                            purchaseOrder: { divisionId }
+                        }
+                    }
+                }
+            }),
             ...(search && {
                 OR: [
                     { referenceNumber: { contains: search, mode: 'insensitive' } },
@@ -135,6 +153,62 @@ export class DispatchService {
         ]);
 
         return { data, total };
+    }
+
+    /**
+     * Get open PO items for a given supplier based on the product's supplierId.
+     * Returns items from POs that have remaining (undispatched) quantity.
+     */
+    public async getOpenPoItemsBySupplier(supplierId: number): Promise<any[]> {
+        const poItems = await prisma.purchaseOrderItem.findMany({
+            where: {
+                product: { supplierId },
+                purchaseOrder: {
+                    status: {
+                        in: [
+                            POStatus.ORDER_PLACED,
+                            POStatus.PARTIALLY_DELIVERED,
+                            POStatus.APPROVED_L1,
+                        ]
+                    }
+                }
+            },
+            include: {
+                product: { include: { supplier: true } },
+                purchaseOrder: true
+            }
+        });
+
+        // Calculate remaining quantity for each item
+        const result: any[] = [];
+        for (const item of poItems) {
+            const dispatchedSum = await prisma.dispatchItem.aggregate({
+                where: {
+                    poItemId: item.id,
+                    dispatch: {
+                        status: {
+                            notIn: [
+                                DispatchStatus.CANCELLED,
+                                DispatchStatus.RETURNED,
+                                DispatchStatus.DELETED
+                            ]
+                        }
+                    }
+                },
+                _sum: { quantity: true }
+            });
+            const remaining = item.quantity - (dispatchedSum._sum.quantity || 0);
+            if (remaining > 0) {
+                const itemWithPO = item as typeof item & { purchaseOrder: { poNumber: string } };
+                result.push({
+                    ...item,
+                    poNumber: itemWithPO.purchaseOrder?.poNumber,
+                    max: remaining,
+                    poItemId: item.id
+                });
+            }
+        }
+        return result;
     }
 
     public async getDispatchById(id: number): Promise<Dispatch | null> {
@@ -314,6 +388,102 @@ export class DispatchService {
 
                 let newPOStatus: POStatus = POStatus.ORDER_PLACED;
 
+                if (allDelivered) {
+                    newPOStatus = POStatus.FULLY_DELIVERED;
+                } else if (anyDelivered) {
+                    newPOStatus = POStatus.PARTIALLY_DELIVERED;
+                }
+
+                await tx.purchaseOrder.update({
+                    where: { id: poId },
+                    data: { status: newPOStatus }
+                });
+            }
+
+            return updated;
+        });
+    }
+
+    public async softDelete(id: number, userId?: number): Promise<Dispatch> {
+        return prisma.$transaction(async (tx) => {
+            // Fetch dispatch with items so we can reverse quantities
+            const dispatch = await tx.dispatch.findUniqueOrThrow({
+                where: { id },
+                include: { items: { include: { poItem: true } } }
+            });
+
+            if (dispatch.status === DispatchStatus.DELETED) {
+                throw new Error('Dispatch is already deleted');
+            }
+
+            const wasDelivered = dispatch.status === DispatchStatus.DELIVERED;
+
+            // 1. Mark dispatch as DELETED
+            const updated = await tx.dispatch.update({
+                where: { id },
+                data: { status: DispatchStatus.DELETED }
+            });
+
+            // 2. Reverse dispatchedQuantity on each PO item
+            //    (only reverse if not already returned/cancelled — those were already decremented)
+            const alreadyReversed =
+                dispatch.status === DispatchStatus.RETURNED ||
+                dispatch.status === DispatchStatus.CANCELLED;
+
+            if (!alreadyReversed) {
+                for (const item of dispatch.items) {
+                    await tx.purchaseOrderItem.update({
+                        where: { id: item.poItemId },
+                        data: { dispatchedQuantity: { decrement: item.quantity } }
+                    });
+                }
+            }
+
+            // 3. If dispatch was DELIVERED, reverse inventory additions
+            if (wasDelivered) {
+                for (const item of dispatch.items) {
+                    if (item.poItem?.productId) {
+                        const inv = await tx.inventory.update({
+                            where: { productId: item.poItem.productId },
+                            data: { quantity: { decrement: item.quantity } }
+                        });
+                        await tx.inventoryHistory.create({
+                            data: {
+                                inventoryId: inv.id,
+                                type: 'SUBTRACT',
+                                quantity: item.quantity,
+                                reason: `Dispatch #${id} deleted (was DELIVERED)`,
+                                updatedBy: userId
+                            }
+                        });
+                    }
+                }
+            }
+
+            // 4. Recalculate PO status for all affected POs (same logic as updateStatus)
+            const poIds = [...new Set(dispatch.items.map(i => i.poItem.poId))];
+
+            for (const poId of poIds) {
+                const poItems = await tx.purchaseOrderItem.findMany({ where: { poId } });
+
+                let allDelivered = true;
+                let anyDelivered = false;
+
+                for (const pi of poItems) {
+                    const deliveredSum = await tx.dispatchItem.aggregate({
+                        where: {
+                            poItemId: pi.id,
+                            dispatch: { status: DispatchStatus.DELIVERED }
+                        },
+                        _sum: { quantity: true }
+                    });
+
+                    const deliveredQty = deliveredSum._sum.quantity || 0;
+                    if (deliveredQty > 0) anyDelivered = true;
+                    if (deliveredQty < pi.quantity) allDelivered = false;
+                }
+
+                let newPOStatus: POStatus = POStatus.ORDER_PLACED;
                 if (allDelivered) {
                     newPOStatus = POStatus.FULLY_DELIVERED;
                 } else if (anyDelivered) {

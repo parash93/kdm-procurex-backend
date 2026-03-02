@@ -16,9 +16,13 @@ model User {
   status           UserStatus         @default(ACTIVE)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
+  divisionId       Int?
+  division         Division?          @relation(fields: [divisionId], references: [id])
   approvals        Approval[]
   stageUpdates     StageUpdate[]
   inventoryHistory InventoryHistory[] @relation("InventoryHistoryUpdatedBy")
+
+  @@index([divisionId])
 }
 
 enum UserStatus {
@@ -35,6 +39,7 @@ model Division {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   purchaseOrders PurchaseOrder[]
+  users          User[]
 }
 
 model ProductCategory {
@@ -50,16 +55,19 @@ model Product {
   id                 Int                 @id @default(autoincrement())
   name               String
   categoryId         Int
+  supplierId         Int?
   description        String?
   minDeliveryDays    Int                 @default(0)
   status             EntityStatus        @default(ACTIVE)
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   category           ProductCategory     @relation(fields: [categoryId], references: [id])
+  supplier           Supplier?           @relation(fields: [supplierId], references: [id])
   purchaseOrderItems PurchaseOrderItem[]
   inventory          Inventory?
 
   @@index([categoryId])
+  @@index([supplierId])
 }
 
 model Supplier {
@@ -74,6 +82,7 @@ model Supplier {
   updatedAt      DateTime        @updatedAt
   purchaseOrders PurchaseOrder[]
   dispatches     Dispatch[]
+  products       Product[]
 }
 
 model PurchaseOrder {
@@ -259,4 +268,5 @@ enum DispatchStatus {
   DELIVERED
   RETURNED
   CANCELLED
+  DELETED
 }

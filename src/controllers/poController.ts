@@ -30,18 +30,25 @@ export class PurchaseOrderController extends Controller {
     }
 
     @Get("paginated")
+    @Security("jwt")
     public async getOrdersPaginated(
         @Query() page: number = 1,
         @Query() limit: number = 10,
         @Query() search?: string,
-        @Query() status?: string
+        @Query() status?: string,
+        @Request() request?: express.Request
     ): Promise<PaginatedResult<PurchaseOrder>> {
-        return this.poService.getPaginated(page, limit, search, status);
+        const user = (request as any)?.user;
+        const divisionId = user?.divisionId || undefined;
+        return this.poService.getPaginated(page, limit, search, status, divisionId);
     }
 
     @Get("/")
-    public async getAllOrders(): Promise<PurchaseOrder[]> {
-        return this.poService.getAll();
+    @Security("jwt")
+    public async getAllOrders(@Request() request?: express.Request): Promise<PurchaseOrder[]> {
+        const user = (request as any)?.user;
+        const divisionId = user?.divisionId || undefined;
+        return this.poService.getAll(divisionId);
     }
 
     @Get("{id}")

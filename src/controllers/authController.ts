@@ -1,9 +1,17 @@
-import { Route, Post, Body, Controller, Tags, Get, Security, Delete, Path, Request, Header } from "tsoa";
+import { Route, Post, Body, Controller, Tags, Get, Security, Delete, Path, Request } from "tsoa";
 import * as express from "express";
 import { injectable } from "inversify";
-import { AuthService, LoginParams, AuthResponse, RefreshResponse, RegisterParams } from "../services/authService";
+import { AuthService, LoginParams, AuthResponse, RefreshResponse } from "../services/authService";
 import { UserService } from "../services/userService";
-import { User } from "@prisma/client";
+import { User, Role } from "@prisma/client";
+
+// Explicit body interface so TSOA can generate proper OpenAPI schema
+interface RegisterWithDivisionParams {
+    username: string;
+    password?: string;
+    role: Role;
+    divisionId?: number;
+}
 
 @injectable()
 @Route("auth")
@@ -43,11 +51,15 @@ export class AuthController extends Controller {
     @Post("register")
     @Security("jwt", ["ADMIN"])
     public async register(
-        @Body() body: RegisterParams,
+        @Body() body: RegisterWithDivisionParams,
         @Request() request: express.Request
     ): Promise<User> {
-        const user = (request as any).user;
-        return this.authService.register(body);
+        try {
+            return await this.authService.register(body);
+        } catch (error: any) {
+            this.setStatus(409);
+            throw new Error(error.message || 'Failed to create user');
+        }
     }
 
     @Get("users")

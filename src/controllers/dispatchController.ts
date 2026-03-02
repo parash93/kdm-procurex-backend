@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Path,
     Post,
@@ -10,12 +11,11 @@ import {
     Route,
     Security,
     Tags,
-    Delete
 } from "tsoa";
 import { Dispatch, DispatchStatus } from "@prisma/client";
 import * as express from "express";
 import { inject, injectable } from "inversify";
-import { CreateDispatchParams, DispatchService } from "../services/dispatchService";
+import { DispatchService } from "../services/dispatchService";
 
 interface DispatchCreationParams {
     supplierId: number;
@@ -63,22 +63,35 @@ export class DispatchController extends Controller {
     }
 
     /**
-     * Get paginated dispatches
+     * Get paginated dispatches, filtered by the logged-in user's division if applicable.
      */
     @Get()
     @Security("jwt")
     public async getDispatches(
         @Query() page: number = 1,
         @Query() limit: number = 10,
-        @Query() search?: string
+        @Query() search?: string,
+        @Request() request?: express.Request
     ): Promise<PaginatedDispatches> {
-        const result = await this.dispatchService.getDispatches(page, limit, search);
+        const user = (request as any)?.user;
+        const divisionId = user?.divisionId || undefined;
+        const result = await this.dispatchService.getDispatches(page, limit, search, divisionId);
         return {
             ...result,
             page,
             limit,
             totalPages: Math.ceil(result.total / limit)
         };
+    }
+
+    /**
+     * Get open PO items for a specific supplier (based on product's supplierId).
+     * Used in the dispatch creation wizard step 2.
+     */
+    @Get("open-items/{supplierId}")
+    @Security("jwt")
+    public async getOpenPoItemsBySupplier(@Path() supplierId: number): Promise<any[]> {
+        return this.dispatchService.getOpenPoItemsBySupplier(supplierId);
     }
 
     /**
@@ -102,5 +115,18 @@ export class DispatchController extends Controller {
     ): Promise<Dispatch> {
         const user = (request as any).user;
         return this.dispatchService.updateStatus(id, requestBody.status, user.id, requestBody.notes);
+    }
+
+    /**
+     * Soft-delete a dispatch (admin only) — sets status to DELETED
+     */
+    @Delete("{id}")
+    @Security("jwt", ["ADMIN"])
+    public async deleteDispatch(
+        @Path() id: number,
+        @Request() request: express.Request
+    ): Promise<Dispatch> {
+        const user = (request as any).user;
+        return this.dispatchService.softDelete(id, user?.id);
     }
 }

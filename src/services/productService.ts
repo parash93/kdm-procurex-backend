@@ -7,6 +7,7 @@ import { AuditService } from "./auditService";
 export interface ProductCreationParams {
     name: string;
     categoryId: number;
+    supplierId?: number;
     description?: string;
     minDeliveryDays?: number;
     status?: EntityStatus;
@@ -25,7 +26,8 @@ export class ProductService {
             },
             include: {
                 category: true,
-                inventory: true
+                inventory: true,
+                supplier: true
             },
             orderBy: { createdAt: 'desc' }
         });
@@ -51,7 +53,7 @@ export class ProductService {
             prisma.product.count({ where }),
             prisma.product.findMany({
                 where,
-                include: { category: true, inventory: true },
+                include: { category: true, inventory: true, supplier: true },
                 orderBy: { createdAt: 'desc' },
                 skip: (page - 1) * limit,
                 take: limit,
@@ -66,7 +68,8 @@ export class ProductService {
             where: { id },
             include: {
                 category: true,
-                inventory: true
+                inventory: true,
+                supplier: true
             }
         });
     }
@@ -76,11 +79,12 @@ export class ProductService {
             data: {
                 name: params.name,
                 categoryId: params.categoryId,
+                supplierId: params.supplierId || null,
                 description: params.description,
                 minDeliveryDays: params.minDeliveryDays || 0,
                 status: params.status || EntityStatus.ACTIVE
             },
-            include: { category: true }
+            include: { category: true, supplier: true }
         });
 
         // Initialize inventory
@@ -104,18 +108,19 @@ export class ProductService {
     }
 
     public async update(id: number, params: Partial<ProductCreationParams>, userId?: number, username?: string): Promise<Product> {
-        const previous = await prisma.product.findUnique({ where: { id }, include: { category: true } });
+        const previous = await prisma.product.findUnique({ where: { id }, include: { category: true, supplier: true } });
 
         const product = await prisma.product.update({
             where: { id },
             data: {
                 name: params.name,
                 categoryId: params.categoryId,
+                supplierId: params.supplierId !== undefined ? (params.supplierId || null) : undefined,
                 description: params.description,
                 minDeliveryDays: params.minDeliveryDays,
                 status: params.status
             },
-            include: { category: true }
+            include: { category: true, supplier: true }
         });
 
         this.auditService.log({

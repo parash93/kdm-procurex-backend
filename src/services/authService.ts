@@ -35,7 +35,8 @@ export class AuthService {
 
     public async login(params: LoginParams): Promise<AuthResponse> {
         const user = await prisma.user.findUnique({
-            where: { username: params.username }
+            where: { username: params.username },
+            include: { division: true }
         });
 
         if (!user || user.status === UserStatus.DELETED) {
@@ -61,7 +62,7 @@ export class AuthService {
         const expiresAt = Date.now() + TOKEN_TTL_MS;
 
         const token = jwt.sign(
-            { id: user.id, username: user.username, role: user.role },
+            { id: user.id, username: user.username, role: user.role, divisionId: user.divisionId },
             JWT_SECRET,
             { expiresIn: TOKEN_TTL }
         );
@@ -85,15 +86,24 @@ export class AuthService {
         };
     }
 
-    public async register(params: RegisterParams): Promise<User> {
+    public async register(params: RegisterParams & { divisionId?: number }): Promise<User> {
         const passwordHash = await bcrypt.hash(params.password || "password123", 10);
-        return prisma.user.create({
-            data: {
-                username: params.username,
-                passwordHash,
-                role: params.role
+        try {
+            return await prisma.user.create({
+                data: {
+                    username: params.username,
+                    passwordHash,
+                    role: params.role,
+                    divisionId: params.divisionId || null
+                }
+            });
+        } catch (error: any) {
+            // P2002 = unique constraint violation
+            if (error?.code === 'P2002') {
+                throw new Error(`Username '${params.username}' is already taken. Please choose a different username.`);
             }
-        });
+            throw error;
+        }
     }
 
     public async verifyToken(token: string): Promise<any> {
@@ -117,7 +127,7 @@ export class AuthService {
         const expiresAt = Date.now() + TOKEN_TTL_MS;
 
         const newToken = jwt.sign(
-            { id: decoded.id, username: decoded.username, role: decoded.role },
+            { id: decoded.id, username: decoded.username, role: decoded.role, divisionId: decoded.divisionId },
             JWT_SECRET,
             { expiresIn: TOKEN_TTL }
         );

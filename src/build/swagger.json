@@ -25,6 +25,10 @@
 			},
 			"DefaultSelection_Prisma._36_UserPayload_": {
 				"properties": {
+					"divisionId": {
+						"type": "number",
+						"format": "double"
+					},
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
@@ -51,6 +55,7 @@
 					}
 				},
 				"required": [
+					"divisionId",
 					"updatedAt",
 					"createdAt",
 					"status",
@@ -78,6 +83,10 @@
 					},
 					"password": {
 						"type": "string"
+					},
+					"divisionId": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -266,6 +275,10 @@
 					"description": {
 						"type": "string"
 					},
+					"supplierId": {
+						"type": "number",
+						"format": "double"
+					},
 					"categoryId": {
 						"type": "number",
 						"format": "double"
@@ -292,6 +305,7 @@
 				"required": [
 					"minDeliveryDays",
 					"description",
+					"supplierId",
 					"categoryId",
 					"updatedAt",
 					"createdAt",
@@ -353,6 +367,10 @@
 						"type": "number",
 						"format": "double"
 					},
+					"supplierId": {
+						"type": "number",
+						"format": "double"
+					},
 					"description": {
 						"type": "string"
 					},
@@ -377,6 +395,10 @@
 						"type": "string"
 					},
 					"categoryId": {
+						"type": "number",
+						"format": "double"
+					},
+					"supplierId": {
 						"type": "number",
 						"format": "double"
 					},
@@ -508,10 +530,6 @@
 			},
 			"DefaultSelection_Prisma._36_PurchaseOrderPayload_": {
 				"properties": {
-					"divisionId": {
-						"type": "number",
-						"format": "double"
-					},
 					"remarks": {
 						"type": "string"
 					},
@@ -519,12 +537,16 @@
 						"type": "string",
 						"format": "date-time"
 					},
+					"poNumber": {
+						"type": "string"
+					},
 					"supplierId": {
 						"type": "number",
 						"format": "double"
 					},
-					"poNumber": {
-						"type": "string"
+					"divisionId": {
+						"type": "number",
+						"format": "double"
 					},
 					"updatedAt": {
 						"type": "string",
@@ -543,11 +565,11 @@
 					}
 				},
 				"required": [
-					"divisionId",
 					"remarks",
 					"poDate",
-					"supplierId",
 					"poNumber",
+					"supplierId",
+					"divisionId",
 					"updatedAt",
 					"createdAt",
 					"status",
@@ -615,6 +637,10 @@
 					"items": {
 						"items": {
 							"properties": {
+								"supplierId": {
+									"type": "number",
+									"format": "double"
+								},
 								"expectedDeliveryDate": {
 									"type": "string",
 									"format": "date-time"
@@ -656,7 +682,6 @@
 					}
 				},
 				"required": [
-					"supplierId",
 					"items"
 				],
 				"type": "object",
@@ -682,6 +707,10 @@
 					"items": {
 						"items": {
 							"properties": {
+								"supplierId": {
+									"type": "number",
+									"format": "double"
+								},
 								"expectedDeliveryDate": {
 									"type": "string",
 									"format": "date-time"
@@ -873,6 +902,7 @@
 			"_36_Enums.DispatchStatus": {
 				"type": "string",
 				"enum": [
+					"DELETED",
 					"DRAFT",
 					"CANCELLED",
 					"PACKED",
@@ -1128,6 +1158,10 @@
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"divisionId": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -1136,7 +1170,8 @@
 					"role",
 					"status",
 					"createdAt",
-					"updatedAt"
+					"updatedAt",
+					"divisionId"
 				],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
@@ -1198,7 +1233,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"RegisterParams": {
+			"RegisterWithDivisionParams": {
 				"properties": {
 					"username": {
 						"type": "string"
@@ -1208,6 +1243,10 @@
 					},
 					"role": {
 						"$ref": "#/components/schemas/Role"
+					},
+					"divisionId": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -2175,7 +2214,11 @@
 				"tags": [
 					"Purchase Orders"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -2237,7 +2280,11 @@
 				"tags": [
 					"Purchase Orders"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
 				"parameters": []
 			},
 			"post": {
@@ -2445,6 +2492,10 @@
 																	"description": {
 																		"type": "string"
 																	},
+																	"supplierId": {
+																		"type": "number",
+																		"format": "double"
+																	},
 																	"categoryId": {
 																		"type": "number",
 																		"format": "double"
@@ -2471,6 +2522,7 @@
 																"required": [
 																	"minDeliveryDays",
 																	"description",
+																	"supplierId",
 																	"categoryId",
 																	"updatedAt",
 																	"createdAt",
@@ -2963,7 +3015,7 @@
 						}
 					}
 				},
-				"description": "Get paginated dispatches",
+				"description": "Get paginated dispatches, filtered by the logged-in user's division if applicable.",
 				"tags": [
 					"Dispatches"
 				],
@@ -3004,6 +3056,44 @@
 				]
 			}
 		},
+		"/dispatches/open-items/{supplierId}": {
+			"get": {
+				"operationId": "GetOpenPoItemsBySupplier",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get open PO items for a specific supplier (based on product's supplierId).\nUsed in the dispatch creation wizard step 2.",
+				"tags": [
+					"Dispatches"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "supplierId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/dispatches/{id}": {
 			"get": {
 				"operationId": "GetDispatchById",
@@ -3031,6 +3121,43 @@
 				"security": [
 					{
 						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteDispatch",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Dispatch"
+								}
+							}
+						}
+					}
+				},
+				"description": "Soft-delete a dispatch (admin only) — sets status to DELETED",
+				"tags": [
+					"Dispatches"
+				],
+				"security": [
+					{
+						"jwt": [
+							"ADMIN"
+						]
 					}
 				],
 				"parameters": [
@@ -3256,7 +3383,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/RegisterParams"
+								"$ref": "#/components/schemas/RegisterWithDivisionParams"
 							}
 						}
 					}

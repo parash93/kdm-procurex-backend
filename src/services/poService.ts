@@ -6,7 +6,7 @@ import { PaginatedResult } from "../types/pagination";
 import { AuditService } from "./auditService";
 
 export interface CreatePOParams {
-    supplierId: number;
+    supplierId?: number;  // now optional - derived from item products
     divisionId?: number;
     remarks?: string;
     poDate?: Date;
@@ -19,6 +19,7 @@ export interface CreatePOParams {
         totalPrice: number;
         remarks?: string;
         expectedDeliveryDate?: Date;
+        supplierId?: number; // per-item supplier (based on product's supplier)
     }[];
 }
 
@@ -31,10 +32,26 @@ export class PurchaseOrderService {
         const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
         const poNumber = `PO-${dateStr}-${randomStr}`;
 
+        // Derive a root supplierId for backward compatibility: use first item's supplier if not provided
+        let rootSupplierId = params.supplierId;
+        if (!rootSupplierId && params.items.length > 0 && params.items[0].supplierId) {
+            rootSupplierId = params.items[0].supplierId;
+        }
+        if (!rootSupplierId) {
+            // Try to get from product if productId provided
+            if (params.items[0]?.productId) {
+                const prod = await prisma.product.findUnique({ where: { id: params.items[0].productId } });
+                rootSupplierId = prod?.supplierId || undefined;
+            }
+        }
+        if (!rootSupplierId) {
+            throw new Error("Unable to determine supplier for purchase order");
+        }
+
         const po = await prisma.purchaseOrder.create({
             data: {
                 poNumber,
-                supplierId: params.supplierId,
+                supplierId: rootSupplierId,
                 divisionId: params.divisionId,
                 remarks: params.remarks,
                 poDate: params.poDate,
@@ -53,7 +70,7 @@ export class PurchaseOrderService {
                 }
             },
             include: {
-                items: true,
+                items: { include: { product: { include: { supplier: true } } } },
                 supplier: true,
                 division: true
             }
@@ -72,19 +89,18 @@ export class PurchaseOrderService {
         return po;
     }
 
-    public async getAll(): Promise<PurchaseOrder[]> {
+    public async getAll(divisionId?: number): Promise<PurchaseOrder[]> {
         return prisma.purchaseOrder.findMany({
             where: {
-                status: {
-                    not: POStatus.DELETED
-                }
+                status: { not: POStatus.DELETED },
+                ...(divisionId && { divisionId })
             },
             include: {
                 supplier: true,
                 division: true,
                 items: {
                     include: {
-                        product: true
+                        product: { include: { supplier: true } }
                     }
                 }
             },
@@ -98,10 +114,12 @@ export class PurchaseOrderService {
         page: number = 1,
         limit: number = 10,
         search?: string,
-        status?: string
+        status?: string,
+        divisionId?: number
     ): Promise<PaginatedResult<PurchaseOrder>> {
         const where: Prisma.PurchaseOrderWhereInput = {
             status: { not: POStatus.DELETED },
+            ...(divisionId && { divisionId }),
             ...(status && status !== 'ALL' && {
                 status: { equals: status as POStatus, not: POStatus.DELETED },
             }),
@@ -121,7 +139,7 @@ export class PurchaseOrderService {
                 include: {
                     supplier: true,
                     division: true,
-                    items: { include: { product: true } },
+                    items: { include: { product: { include: { supplier: true } } } },
                 },
                 orderBy: { createdAt: 'desc' },
                 skip: (page - 1) * limit,

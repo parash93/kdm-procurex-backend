@@ -8,6 +8,7 @@ export interface UserCreationParams {
     username: string;
     role: Role;
     password?: string;
+    divisionId?: number;
 }
 
 @injectable()
@@ -37,7 +38,8 @@ export class UserService {
             data: {
                 username: params.username,
                 passwordHash,
-                role: params.role
+                role: params.role,
+                divisionId: params.divisionId || null
             }
         });
 
@@ -47,7 +49,7 @@ export class UserService {
             action: "CREATE",
             userId: performedByUserId,
             username: performedByUsername,
-            newData: { id: user.id, username: user.username, role: user.role, status: user.status },
+            newData: { id: user.id, username: user.username, role: user.role, status: user.status, divisionId: user.divisionId },
         });
 
         return user;
