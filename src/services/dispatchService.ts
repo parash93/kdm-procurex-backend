@@ -254,12 +254,42 @@ export class DispatchService {
             const previousStatus = dispatch.status;
             const newStatus = status;
 
-            // Prevent invalid transitions
+            // ── Enforce linear status progression ──────────────────────────────
+            // Allowed forward transitions:
+            //   DRAFT → PACKED → SHIPPED → IN_TRANSIT → DELIVERED → RETURNED
+            // CANCELLED is always allowed (except from CANCELLED itself).
+            // RETURNED is only allowed from DELIVERED.
+            const ORDER: DispatchStatus[] = [
+                DispatchStatus.DRAFT,
+                DispatchStatus.PACKED,
+                DispatchStatus.SHIPPED,
+                DispatchStatus.IN_TRANSIT,
+                DispatchStatus.DELIVERED,
+                DispatchStatus.RETURNED,
+            ];
+
             if (previousStatus === DispatchStatus.CANCELLED) {
                 throw new Error("Cannot change status from CANCELLED");
             }
+            if (previousStatus === DispatchStatus.RETURNED && newStatus !== DispatchStatus.CANCELLED) {
+                throw new Error("Cannot change status from RETURNED (except to CANCELLED)");
+            }
+
+            if (newStatus !== DispatchStatus.CANCELLED) {
+                const prevIdx = ORDER.indexOf(previousStatus);
+                const newIdx = ORDER.indexOf(newStatus);
+                if (newIdx !== prevIdx + 1) {
+                    throw new Error(
+                        `Invalid transition: ${previousStatus} → ${newStatus}. ` +
+                        `Expected next status: ${ORDER[prevIdx + 1] ?? 'none'}`
+                    );
+                }
+            }
+            // ──────────────────────────────────────────────────────────────────
 
             const wasDelivered = previousStatus === DispatchStatus.DELIVERED;
+            const isShipped = newStatus === DispatchStatus.SHIPPED;
+            const isInTransit = newStatus === DispatchStatus.IN_TRANSIT;
             const isDelivered = newStatus === DispatchStatus.DELIVERED;
             const isReturned = newStatus === DispatchStatus.RETURNED;
             const isCancelled = newStatus === DispatchStatus.CANCELLED;
@@ -359,6 +389,14 @@ export class DispatchService {
 
             /* =====================================================
                3️⃣ UPDATE PURCHASE ORDER STATUS
+               A PO can have many items, each dispatched independently,
+               so SHIPPED / IN_TRANSIT at the dispatch level has no
+               meaningful aggregate representation at the PO level.
+               We only update PO status based on how much has actually
+               been DELIVERED vs ordered:
+                 - Some qty delivered, but not all  → PARTIALLY_DELIVERED
+                 - All qty delivered                → FULLY_DELIVERED
+                 - Nothing delivered (e.g. after RETURNED/CANCELLED reset) → ORDER_PLACED
                ===================================================== */
 
             const poIds = [
@@ -375,7 +413,7 @@ export class DispatchService {
                 let anyDelivered = false;
 
                 for (const pi of poItems) {
-
+                    // Sum quantity from DELIVERED dispatches only
                     const deliveredSum = await tx.dispatchItem.aggregate({
                         where: {
                             poItemId: pi.id,
@@ -385,17 +423,18 @@ export class DispatchService {
                     });
 
                     const deliveredQty = deliveredSum._sum.quantity || 0;
-
                     if (deliveredQty > 0) anyDelivered = true;
                     if (deliveredQty < pi.quantity) allDelivered = false;
                 }
 
-                let newPOStatus: POStatus = POStatus.ORDER_PLACED;
+                let newPOStatus: POStatus;
 
                 if (allDelivered) {
                     newPOStatus = POStatus.FULLY_DELIVERED;
                 } else if (anyDelivered) {
                     newPOStatus = POStatus.PARTIALLY_DELIVERED;
+                } else {
+                    newPOStatus = POStatus.ORDER_PLACED;
                 }
 
                 await tx.purchaseOrder.update({
