@@ -376,7 +376,11 @@ const models: TsoaRoute.Models = {
             "totalDivisions": {"dataType":"double","required":true},
             "totalProducts": {"dataType":"double","required":true},
             "totalCategories": {"dataType":"double","required":true},
+            "totalDispatches": {"dataType":"double","required":true},
+            "activeDispatches": {"dataType":"double","required":true},
+            "deliveredDispatches": {"dataType":"double","required":true},
             "statusCounts": {"ref":"Record_string.number_","required":true},
+            "dispatchStatusCounts": {"ref":"Record_string.number_","required":true},
         },
         "additionalProperties": false,
     },
@@ -387,6 +391,9 @@ const models: TsoaRoute.Models = {
             "divisionName": {"dataType":"string","required":true},
             "count": {"dataType":"double","required":true},
             "totalQty": {"dataType":"double","required":true},
+            "dispatchedQty": {"dataType":"double","required":true},
+            "deliveredQty": {"dataType":"double","required":true},
+            "pendingQty": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
@@ -2105,6 +2112,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsDashboardController_getStats: Record<string, TsoaRoute.ParameterSchema> = {
+                divisionId: {"in":"query","name":"divisionId","dataType":"double"},
         };
         app.get('/dashboard/stats',
             ...(fetchMiddlewares<RequestHandler>(DashboardController)),
@@ -2139,6 +2147,9 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsDashboardController_getDelayedOrders: Record<string, TsoaRoute.ParameterSchema> = {
+                divisionId: {"in":"query","name":"divisionId","dataType":"double"},
+                page: {"default":1,"in":"query","name":"page","dataType":"double"},
+                limit: {"default":10,"in":"query","name":"limit","dataType":"double"},
         };
         app.get('/dashboard/delayed',
             ...(fetchMiddlewares<RequestHandler>(DashboardController)),
@@ -2173,6 +2184,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsDashboardController_getOrdersByDivision: Record<string, TsoaRoute.ParameterSchema> = {
+                divisionId: {"in":"query","name":"divisionId","dataType":"double"},
         };
         app.get('/dashboard/by-division',
             ...(fetchMiddlewares<RequestHandler>(DashboardController)),
@@ -2195,6 +2207,83 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'getOrdersByDivision',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsDashboardController_getOrdersReport: Record<string, TsoaRoute.ParameterSchema> = {
+                status: {"in":"query","name":"status","dataType":"string"},
+                divisionId: {"in":"query","name":"divisionId","dataType":"double"},
+                supplierId: {"in":"query","name":"supplierId","dataType":"double"},
+                from: {"in":"query","name":"from","dataType":"string"},
+                to: {"in":"query","name":"to","dataType":"string"},
+        };
+        app.get('/dashboard/reports/orders',
+            ...(fetchMiddlewares<RequestHandler>(DashboardController)),
+            ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.getOrdersReport)),
+
+            async function DashboardController_getOrdersReport(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsDashboardController_getOrdersReport, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<DashboardController>(DashboardController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getOrdersReport',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsDashboardController_getDispatchesReport: Record<string, TsoaRoute.ParameterSchema> = {
+                status: {"in":"query","name":"status","dataType":"string"},
+                supplierId: {"in":"query","name":"supplierId","dataType":"double"},
+                from: {"in":"query","name":"from","dataType":"string"},
+                to: {"in":"query","name":"to","dataType":"string"},
+        };
+        app.get('/dashboard/reports/dispatches',
+            ...(fetchMiddlewares<RequestHandler>(DashboardController)),
+            ...(fetchMiddlewares<RequestHandler>(DashboardController.prototype.getDispatchesReport)),
+
+            async function DashboardController_getDispatchesReport(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsDashboardController_getDispatchesReport, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<DashboardController>(DashboardController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getDispatchesReport',
                 controller,
                 response,
                 next,

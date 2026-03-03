@@ -1096,7 +1096,22 @@
 						"type": "number",
 						"format": "double"
 					},
+					"totalDispatches": {
+						"type": "number",
+						"format": "double"
+					},
+					"activeDispatches": {
+						"type": "number",
+						"format": "double"
+					},
+					"deliveredDispatches": {
+						"type": "number",
+						"format": "double"
+					},
 					"statusCounts": {
+						"$ref": "#/components/schemas/Record_string.number_"
+					},
+					"dispatchStatusCounts": {
 						"$ref": "#/components/schemas/Record_string.number_"
 					}
 				},
@@ -1109,7 +1124,11 @@
 					"totalDivisions",
 					"totalProducts",
 					"totalCategories",
-					"statusCounts"
+					"totalDispatches",
+					"activeDispatches",
+					"deliveredDispatches",
+					"statusCounts",
+					"dispatchStatusCounts"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1126,12 +1145,27 @@
 					"totalQty": {
 						"type": "number",
 						"format": "double"
+					},
+					"dispatchedQty": {
+						"type": "number",
+						"format": "double"
+					},
+					"deliveredQty": {
+						"type": "number",
+						"format": "double"
+					},
+					"pendingQty": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
 					"divisionName",
 					"count",
-					"totalQty"
+					"totalQty",
+					"dispatchedQty",
+					"deliveredQty",
+					"pendingQty"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -3242,7 +3276,17 @@
 					"Dashboard"
 				],
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "divisionId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/dashboard/delayed": {
@@ -3253,10 +3297,7 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {
-									"items": {},
-									"type": "array"
-								}
+								"schema": {}
 							}
 						}
 					}
@@ -3265,7 +3306,37 @@
 					"Dashboard"
 				],
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "divisionId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/dashboard/by-division": {
@@ -3290,7 +3361,140 @@
 					"Dashboard"
 				],
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "divisionId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/reports/orders": {
+			"get": {
+				"operationId": "GetOrdersReport",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "divisionId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "supplierId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "from",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "to",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/dashboard/reports/dispatches": {
+			"get": {
+				"operationId": "GetDispatchesReport",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Dashboard"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "supplierId",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "from",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "to",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/auth/login": {
